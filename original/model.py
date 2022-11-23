@@ -1,26 +1,28 @@
 # Defines the CA Model and provides utilities
 
+print('\n...........................IN model.py...........................')
+
 import os
 import io
 import PIL.Image, PIL.ImageDraw
-import base64
-import zipfile
-import json
+# import base64
+# import zipfile
+# import json
 import requests
 import numpy as np
-import matplotlib.pylab as pl
-import glob
+# import matplotlib.pylab as pl
+# import glob
 
 import tensorflow as tf
 
-from IPython.display import Image, HTML, clear_output
-import tqdm
+# from IPython.display import Image, HTML, clear_output
+# import tqdm
 
 import os
 os.environ['FFMPEG_BINARY'] = 'ffmpeg'
-import moviepy.editor as mvp
-from moviepy.video.io.ffmpeg_writer import FFMPEG_VideoWriter
-clear_output()
+# import moviepy.editor as mvp
+# from moviepy.video.io.ffmpeg_writer import FFMPEG_VideoWriter
+# clear_output()
 
 # Cellular Automata Parameters
 CHANNEL_N = 16        # Number of CA state channels

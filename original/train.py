@@ -1,32 +1,37 @@
 # Module for training the CA model
 
+print('\n...........................IN train.py...........................')
+
 import os
-import io
-import PIL.Image, PIL.ImageDraw
-import base64
-import zipfile
+# import io
+# import PIL.ImageDraw
+# import base64
+# import zipfile
 import json
-import requests
+# import requests
 import numpy as np
 import matplotlib.pylab as pl
-import matplotlib.pyplot as plt
-import glob
+# import matplotlib.pyplot as plt
+# import glob
 
+# import tensorflow as tf
 import tensorflow as tf
 
-from IPython.display import Image, HTML, clear_output
-import tqdm
+# from IPython.display import Image, HTML, clear_output
+# import tqdm
 
 import os
+# from sys import stdout
+from tqdm import tqdm
 
-from helpers import imshow, imwrite, tile2d
+from helpers import imshow, imwrite, tile2d 
 os.environ['FFMPEG_BINARY'] = 'ffmpeg'
-import moviepy.editor as mvp
-from moviepy.video.io.ffmpeg_writer import FFMPEG_VideoWriter
-clear_output()
+# import moviepy.editor as mvp
+# from moviepy.video.io.ffmpeg_writer import FFMPEG_VideoWriter
+# clear_output()
 
 # Initialize training
-from model import TARGET_PADDING, CAModel, load_emoji, to_rgb, to_rgba
+from model import TARGET_PADDING, CAModel, to_rgb, to_rgba
 
 from google.protobuf.json_format import MessageToDict
 from tensorflow.python.framework import convert_to_constants
@@ -150,7 +155,7 @@ def train_ca(ca, target_img, steps=8000, p=TARGET_PADDING, lr=2e-3):
   Main training function. 
   Equivalent to 'Training Loop' in Colab Notebook.
   """
-  print('TRAINING...')
+  # print('TRAINING...')
 
   lr_sched=tf.keras.optimizers.schedules.PiecewiseConstantDecay(
     [2000], [lr, lr*0.1])
@@ -165,8 +170,8 @@ def train_ca(ca, target_img, steps=8000, p=TARGET_PADDING, lr=2e-3):
   # loss0 = loss_f(seed).numpy()
   pool = SamplePool(x=np.repeat(seed[None, ...], POOL_SIZE, 0))
 
-  for i in range(steps+1):
-    print(f'At step {i} in training loop')
+  for i in tqdm(range(steps+1)):
+    # print(f'At step {i} in training loop')
     if USE_PATTERN_POOL:
       batch = pool.sample(BATCH_SIZE)
       x0 = batch.x
@@ -180,7 +185,7 @@ def train_ca(ca, target_img, steps=8000, p=TARGET_PADDING, lr=2e-3):
       x0 = np.repeat(seed[None, ...], BATCH_SIZE, 0)
 
     x, loss = train_step(x0, trainer, pad_target, ca=ca)
-    print('Exited train_step')
+    # print('Exited train_step')
 
     if USE_PATTERN_POOL:
       batch.x[:] = x
@@ -188,24 +193,28 @@ def train_ca(ca, target_img, steps=8000, p=TARGET_PADDING, lr=2e-3):
 
     step_i = len(loss_log)
     loss_log.append(loss.numpy())
-    print('appended to loss_log')
+    # print('appended to loss_log')
     
     if step_i%10 == 0:
-      print('generating pool figures...')
+      # print('generating pool figures...')
       generate_pool_figures(pool, step_i)
-      print('...finished generating pool figures')
+      # print('...finished generating pool figures')
     if step_i%100 == 0:
-      print('starting to clear output...')
-      clear_output()
-      print('cleared output...')
+      # print('starting to clear output...')
+      # clear_output()
+      # print('cleared output...')
       visualize_batch(x0, x, step_i)
-      print('visualizing batch...')
+      # print('visualizing batch...')
       plot_loss(loss_log)
-      print('plotted loss...')
+      # print('plotted loss...')
       export_model(ca, 'train_log/%04d'%step_i)
-      print('exported model...')
+      # print('exported model...')
 
     print('\r step: %d, log10(loss): %.3f'%(len(loss_log), np.log10(loss)), end='')
+    # print('step: %d, log10(loss): %.3f'%(len(loss_log), np.log10(loss)), end='\r')
+    # stdout.write('\r step: %d, log10(loss): %.3f'%(len(loss_log), np.log10(loss)))
+    # stdout.flush()
+    
 
 
 # ca = CAModel()

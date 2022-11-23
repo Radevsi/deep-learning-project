@@ -1,3 +1,5 @@
+print('\n...........................IN helpers.py...........................')
+
 import os
 import io
 import PIL.Image, PIL.ImageDraw
@@ -7,7 +9,7 @@ import numpy as np
 # from IPython.display import Image, clear_output, display
 from PIL import Image
 
-from matplotlib.pyplot import imshow as imdisplay
+# from matplotlib.pyplot import imshow as imdisplay
 
 import os
 os.environ['FFMPEG_BINARY'] = 'ffmpeg'
@@ -48,6 +50,7 @@ def imshow(a, fmt='jpeg', SAVE=False):
   """
   im = Image.fromarray((a*255).astype(np.uint8))
   im.show()
+  # print(im)
   if SAVE:
     im.save(f'output/target_img.{fmt}')
 #   display(Image(data=imencode(a, fmt)))
