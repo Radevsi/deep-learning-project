@@ -170,7 +170,7 @@ def train_ca(ca, target_img, steps=8000, p=TARGET_PADDING, lr=2e-3):
   # loss0 = loss_f(seed).numpy()
   pool = SamplePool(x=np.repeat(seed[None, ...], POOL_SIZE, 0))
 
-  for i in tqdm(range(steps+1)):
+  for i in range(steps+1):
     # print(f'At step {i} in training loop')
     if USE_PATTERN_POOL:
       batch = pool.sample(BATCH_SIZE)
