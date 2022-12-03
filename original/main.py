@@ -44,10 +44,10 @@ def main():
 
     # with tf.device('/gpu:0'):
     ca = CAModel(channel_n=CHANNEL_N)
-    # train_ca(ca, target_img=target_img, 
-    #         use_pattern_pool=USE_PATTERN_POOL, 
-    #         damage_n=DAMAGE_N, channel_n=CHANNEL_N,
-    #         steps=2)
+    train_ca(ca, target_img=target_img, 
+            use_pattern_pool=USE_PATTERN_POOL, 
+            damage_n=DAMAGE_N, channel_n=CHANNEL_N,
+            steps=100)
 
     # Save some figures of training progress
     fig_gen = FigGen(ca)

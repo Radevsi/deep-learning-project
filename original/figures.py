@@ -46,8 +46,8 @@ class FigGen:
 
     print("IN checkpoints FUNCTION")
     # for i in [100, 500, 1000, 4000]:
-    for i in [0]:
-    # for i in [100, 500, 1000, 2000]:
+    for i in [100]:
+    #for i in [100, 500, 1000, 2000]:
       self.ca.load_weights('train_log/%04d'%i)
       self.models.append(self.ca)
 
