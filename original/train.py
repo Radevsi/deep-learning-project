@@ -99,12 +99,16 @@ def visualize_batch(x0, x, step_i):
   # print('batch (before/after):')
   # imshow(vis)
 
-def plot_loss(loss_log):
+def plot_loss(loss_log, save=False):
   pl.figure(figsize=(10, 4))
   pl.title('Loss history (log10)')
   pl.plot(np.log10(loss_log), '.', alpha=0.1)
   # pl.show()
-  pl.draw()
+  if save:
+    pl.savefig('output/loss_plot.png')
+  else:
+    pl.draw()
+  
 
 
 def loss_f(x, pad_target):
@@ -192,3 +196,4 @@ def train_ca(ca, target_img, use_pattern_pool, damage_n, channel_n,
     # print('step: %d, log10(loss): %.3f'%(len(loss_log), np.log10(loss)), end='\r')
     # stdout.write('\r step: %d, log10(loss): %.3f'%(len(loss_log), np.log10(loss)))
     # stdout.flush()
+  plot_loss(loss_log, save=True)
