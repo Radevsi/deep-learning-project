@@ -36,7 +36,7 @@ def main():
     imshow(zoom(to_rgb(target_img), 2), fmt='png', SAVE=True)
     # print(f'target image is: {target_img}')
 
-    EXPERIMENT_TYPE = "Growing" #@param ["Growing", "Persistent", "Regenerating"]
+    EXPERIMENT_TYPE = "Persistent" #@param ["Growing", "Persistent", "Regenerating"]
     EXPERIMENT_MAP = {"Growing":0, "Persistent":1, "Regenerating":2}
     EXPERIMENT_N = EXPERIMENT_MAP[EXPERIMENT_TYPE]
     THRESHOLD = 0.01
@@ -64,8 +64,8 @@ def main():
 
     # Save some figures of training progress
     fig_gen = FigGen(ca)
-    # steps = [100, 500, 1000, 4000]
-    steps = [100]
+    steps = [100, 500, 1000, 4000]
+    # steps = [100]
     fig_gen.training_progress_checkpoints(damage_n=DAMAGE_N, channel_n=CHANNEL_N, steps=steps)
     fig_gen.training_progress_batches()
     fig_gen.pool_contents()

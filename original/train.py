@@ -105,12 +105,10 @@ def plot_loss(loss_log, save=False):
   pl.plot(np.log10(loss_log), '.', alpha=0.1)
   # pl.show()
   if save:
-    pl.savefig('output/loss_plot.png')
+    pl.savefig('figures/loss_plot.png')
   else:
     pl.draw()
   
-
-
 def loss_f(x, pad_target):
   return tf.reduce_mean(tf.square(to_rgba(x)-pad_target), [-2, -3, -1])
 
