@@ -14,30 +14,19 @@ import matplotlib.pylab as pl
 # import matplotlib.pyplot as plt
 # import glob
 
-# import tensorflow as tf
 import tensorflow as tf
 
-# from IPython.display import Image, HTML, clear_output
-# import tqdm
-
 import os
-# from sys import stdout
 from tqdm import tqdm
 
-from helpers import imshow, imwrite, tile2d 
+from utils import imshow, imwrite, tile2d 
 os.environ['FFMPEG_BINARY'] = 'ffmpeg'
-# import moviepy.editor as mvp
-# from moviepy.video.io.ffmpeg_writer import FFMPEG_VideoWriter
-# clear_output()
 
 # Initialize training
-from model import TARGET_PADDING, CAModel, to_rgb, to_rgba
+from model import TARGET_PADDING, POOL_SIZE, BATCH_SIZE, CAModel, to_rgb, to_rgba
 
 from google.protobuf.json_format import MessageToDict
 from tensorflow.python.framework import convert_to_constants
-
-# TARGET_EMOJI = "🦎" #@param {type:"string"}
-
 
 # Train Utilities (SamplePool, Model Export, Damage)
 class SamplePool:
@@ -72,11 +61,11 @@ def make_circle_masks(n, h, w):
   mask = tf.cast(x*x+y*y < 1.0, tf.float32)
   return mask
 
-def export_model(ca, base_fn):
+def export_model(ca, base_fn, channel_n):
   ca.save_weights(base_fn)
 
   cf = ca.call.get_concrete_function(
-      x=tf.TensorSpec([None, None, None, CHANNEL_N]),
+      x=tf.TensorSpec([None, None, None, channel_n]),
       fire_rate=tf.constant(0.5),
       angle=tf.constant(0.0),
       step_size=tf.constant(1.0))
@@ -107,8 +96,8 @@ def visualize_batch(x0, x, step_i):
   vis1 = np.hstack(to_rgb(x).numpy())
   vis = np.vstack([vis0, vis1])
   imwrite('train_log/batches_%04d.jpg'%step_i, vis)
-  print('batch (before/after):')
-  imshow(vis)
+  # print('batch (before/after):')
+  # imshow(vis)
 
 def plot_loss(loss_log):
   pl.figure(figsize=(10, 4))
@@ -117,10 +106,6 @@ def plot_loss(loss_log):
   # pl.show()
   pl.draw()
 
-
-# target_img = load_emoji(TARGET_EMOJI)
-# p=TARGET_PADDING
-# pad_target = tf.pad(target_img, [(p, p), (p, p), (0, 0)])
 
 def loss_f(x, pad_target):
   return tf.reduce_mean(tf.square(to_rgba(x)-pad_target), [-2, -3, -1])
@@ -141,16 +126,9 @@ def train_step(x, trainer, pad_target, ca=CAModel()):
   trainer.apply_gradients(zip(grads, ca.weights))
   return x, loss
 
-from model import CHANNEL_N, POOL_SIZE
-BATCH_SIZE = 8
-EXPERIMENT_TYPE = "Regenerating" #@param ["Growing", "Persistent", "Regenerating"]
-EXPERIMENT_MAP = {"Growing":0, "Persistent":1, "Regenerating":2}
-EXPERIMENT_N = EXPERIMENT_MAP[EXPERIMENT_TYPE]
 
-USE_PATTERN_POOL = [0, 1, 1][EXPERIMENT_N]
-DAMAGE_N = [0, 0, 3][EXPERIMENT_N]  # Number of patterns to damage in a batch
-
-def train_ca(ca, target_img, steps=8000, p=TARGET_PADDING, lr=2e-3):
+def train_ca(ca, target_img, use_pattern_pool, damage_n, channel_n, 
+              steps=8000, p=TARGET_PADDING, lr=2e-3):
   """
   Main training function. 
   Equivalent to 'Training Loop' in Colab Notebook.
@@ -164,7 +142,7 @@ def train_ca(ca, target_img, steps=8000, p=TARGET_PADDING, lr=2e-3):
   loss_log = []
   pad_target = tf.pad(target_img, [(p, p), (p, p), (0, 0)])
   h, w = pad_target.shape[:2]
-  seed = np.zeros([h, w, CHANNEL_N], np.float32)
+  seed = np.zeros([h, w, channel_n], np.float32)
   seed[h//2, w//2, 3:] = 1.0
 
   # loss0 = loss_f(seed).numpy()
@@ -172,22 +150,22 @@ def train_ca(ca, target_img, steps=8000, p=TARGET_PADDING, lr=2e-3):
 
   for i in range(steps+1):
     # print(f'At step {i} in training loop')
-    if USE_PATTERN_POOL:
+    if use_pattern_pool:
       batch = pool.sample(BATCH_SIZE)
       x0 = batch.x
       loss_rank = loss_f(x0, pad_target).numpy().argsort()[::-1]
       x0 = x0[loss_rank]
       x0[:1] = seed
-      if DAMAGE_N:
-        damage = 1.0-make_circle_masks(DAMAGE_N, h, w).numpy()[..., None]
-        x0[-DAMAGE_N:] *= damage
+      if damage_n:
+        damage = 1.0-make_circle_masks(damage_n, h, w).numpy()[..., None]
+        x0[-damage_n:] *= damage
     else:
       x0 = np.repeat(seed[None, ...], BATCH_SIZE, 0)
 
     x, loss = train_step(x0, trainer, pad_target, ca=ca)
     # print('Exited train_step')
 
-    if USE_PATTERN_POOL:
+    if use_pattern_pool:
       batch.x[:] = x
       batch.commit()
 
@@ -207,16 +185,10 @@ def train_ca(ca, target_img, steps=8000, p=TARGET_PADDING, lr=2e-3):
       # print('visualizing batch...')
       plot_loss(loss_log)
       # print('plotted loss...')
-      export_model(ca, 'train_log/%04d'%step_i)
+      export_model(ca, 'train_log/%04d'%step_i, channel_n)
       # print('exported model...')
 
     print('\r step: %d, log10(loss): %.3f'%(len(loss_log), np.log10(loss)), end='')
     # print('step: %d, log10(loss): %.3f'%(len(loss_log), np.log10(loss)), end='\r')
     # stdout.write('\r step: %d, log10(loss): %.3f'%(len(loss_log), np.log10(loss)))
     # stdout.flush()
-    
-
-
-# ca = CAModel()
-
-# !mkdir -p train_log && rm -f train_log/*

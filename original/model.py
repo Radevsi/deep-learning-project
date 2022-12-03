@@ -5,42 +5,21 @@ print('\n...........................IN model.py...........................')
 import os
 import io
 import PIL.Image, PIL.ImageDraw
-# import base64
-# import zipfile
-# import json
 import requests
 import numpy as np
-# import matplotlib.pylab as pl
-# import glob
 
 import tensorflow as tf
 
-# from IPython.display import Image, HTML, clear_output
-# import tqdm
-
 import os
 os.environ['FFMPEG_BINARY'] = 'ffmpeg'
-# import moviepy.editor as mvp
-# from moviepy.video.io.ffmpeg_writer import FFMPEG_VideoWriter
-# clear_output()
 
 # Cellular Automata Parameters
-CHANNEL_N = 16        # Number of CA state channels
+# CHANNEL_N = 16        # Number of CA state channels
 TARGET_PADDING = 16   # Number of pixels used to pad the target image border
 TARGET_SIZE = 40
-# BATCH_SIZE = 8
+BATCH_SIZE = 8
 POOL_SIZE = 1024
 CELL_FIRE_RATE = 0.5
-
-
-# EXPERIMENT_TYPE = "Regenerating" #@param ["Growing", "Persistent", "Regenerating"]
-# EXPERIMENT_MAP = {"Growing":0, "Persistent":1, "Regenerating":2}
-# EXPERIMENT_N = EXPERIMENT_MAP[EXPERIMENT_TYPE]
-
-# USE_PATTERN_POOL = [0, 1, 1][EXPERIMENT_N]
-# DAMAGE_N = [0, 0, 3][EXPERIMENT_N]  # Number of patterns to damage in a batch
-
-
 
 from tensorflow.keras.layers import Conv2D
 
@@ -73,15 +52,15 @@ def get_living_mask(x):
   alpha = x[:, :, :, 3:4]
   return tf.nn.max_pool2d(alpha, 3, [1, 1, 1, 1], 'SAME') > 0.1
 
-def make_seed(size, n=1):
-  x = np.zeros([n, size, size, CHANNEL_N], np.float32)
+def make_seed(size, n=1, channel_n=16):
+  x = np.zeros([n, size, size, channel_n], np.float32)
   x[:, size//2, size//2, 3:] = 1.0
   return x
 
 
 class CAModel(tf.keras.Model):
 
-  def __init__(self, channel_n=CHANNEL_N, fire_rate=CELL_FIRE_RATE):
+  def __init__(self, channel_n=16, fire_rate=CELL_FIRE_RATE):
     super().__init__()
     self.channel_n = channel_n
     self.fire_rate = fire_rate
