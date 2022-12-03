@@ -14,9 +14,9 @@ import os
 os.environ['FFMPEG_BINARY'] = 'ffmpeg'
 
 # Cellular Automata Parameters
-# CHANNEL_N = 16        # Number of CA state channels
+CHANNEL_N = 16        # Number of CA state channels
 TARGET_PADDING = 16   # Number of pixels used to pad the target image border
-TARGET_SIZE = 40
+TARGET_SIZE = 125
 BATCH_SIZE = 8
 POOL_SIZE = 1024
 CELL_FIRE_RATE = 0.5

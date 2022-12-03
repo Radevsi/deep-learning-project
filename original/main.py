@@ -45,7 +45,7 @@ def main():
     DAMAGE_N = [0, 0, 3][EXPERIMENT_N]  # Number of patterns to damage in a batch
 
     load_path = 'images/bob-ross-painting.png'
-    target_img, alpha_channel, orig_img = load_alive_image(load_path, max_size=80, 
+    target_img, alpha_channel, orig_img = load_alive_image(load_path, max_size=125, 
         threshold=THRESHOLD)
 
     # print(f'The image (shape: {orig_img.shape}) we are working with is: ')

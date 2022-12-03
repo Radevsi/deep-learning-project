@@ -10,6 +10,8 @@ import tqdm
 import model
 import utils
 
+PATH = 'figures/bob_ross_painting/persistent/channel-16_hidden-128/'
+
 # From original Colab
 class VideoWriter:
   def __init__(self, filename, fps=30.0, **kw):
@@ -63,12 +65,12 @@ class FigGen:
     
     # Make a VideoFileClip object and then write it 
     clip = mvp.VideoFileClip(out_fn)
-    clip.write_videofile(f'figures/{out_fn}')
+    clip.write_videofile(f'{PATH}{out_fn}')
     
   def training_progress_batches(self):
     frames = sorted(glob.glob('train_log/batches_*.jpg'))
-    mvp.ImageSequenceClip(frames, fps=10.0).write_videofile('figures/batches.mp4')
+    mvp.ImageSequenceClip(frames, fps=10.0).write_videofile(f'{PATH}batches.mp4')
 
   def pool_contents(self):
     frames = sorted(glob.glob('train_log/*_pool.jpg'))[:80]
-    mvp.ImageSequenceClip(frames, fps=20.0).write_videofile('figures/pool.mp4')
+    mvp.ImageSequenceClip(frames, fps=20.0).write_videofile(f'{PATH}pool.mp4')
