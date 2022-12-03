@@ -15,6 +15,7 @@ from model import CAModel, load_emoji, to_rgb
 from utils import imshow, zoom
 from train import train_ca
 from figures import FigGen
+import time
 
 print('...........................FINISHED IMPORTS...........................')
 
@@ -44,10 +45,13 @@ def main():
 
     # with tf.device('/gpu:0'):
     ca = CAModel(channel_n=CHANNEL_N)
+    start_time = time.time()
     train_ca(ca, target_img=target_img, 
             use_pattern_pool=USE_PATTERN_POOL, 
             damage_n=DAMAGE_N, channel_n=CHANNEL_N,
-            steps=100)
+            steps=8000)
+
+    print(f"\nTraining took {time.time() - start_time} seconds")
 
     # Save some figures of training progress
     fig_gen = FigGen(ca)
