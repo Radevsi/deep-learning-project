@@ -12,7 +12,7 @@ logger = tf.get_logger()
 logger.setLevel(logging.ERROR)
 
 from model import CAModel, load_emoji, to_rgb
-from utils import imshow, zoom
+from utils import imshow, zoom, load_alive_image
 from train import train_ca
 from figures import FigGen
 import time
@@ -39,9 +39,18 @@ def main():
     EXPERIMENT_TYPE = "Growing" #@param ["Growing", "Persistent", "Regenerating"]
     EXPERIMENT_MAP = {"Growing":0, "Persistent":1, "Regenerating":2}
     EXPERIMENT_N = EXPERIMENT_MAP[EXPERIMENT_TYPE]
+    THRESHOLD = 0.01
 
     USE_PATTERN_POOL = [0, 1, 1][EXPERIMENT_N]
     DAMAGE_N = [0, 0, 3][EXPERIMENT_N]  # Number of patterns to damage in a batch
+
+    load_path = 'images/bob-ross-painting.png'
+    target_img, alpha_channel, orig_img = load_alive_image(load_path, max_size=80, 
+        threshold=THRESHOLD)
+
+    # print(f'The image (shape: {orig_img.shape}) we are working with is: ')
+    # plt.imshow(orig_img)
+    # plt.show()
 
     # with tf.device('/gpu:0'):
     ca = CAModel(channel_n=CHANNEL_N)
@@ -55,7 +64,9 @@ def main():
 
     # Save some figures of training progress
     fig_gen = FigGen(ca)
-    fig_gen.training_progress_checkpoints(damage_n=DAMAGE_N, channel_n=CHANNEL_N)
+    # steps = [100, 500, 1000, 4000]
+    steps = [100]
+    fig_gen.training_progress_checkpoints(damage_n=DAMAGE_N, channel_n=CHANNEL_N, steps=steps)
     fig_gen.training_progress_batches()
     fig_gen.pool_contents()
 

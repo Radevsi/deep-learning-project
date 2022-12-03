@@ -63,3 +63,20 @@ def zoom(img, scale=4):
   img = np.repeat(img, scale, 0)
   img = np.repeat(img, scale, 1)
   return img
+
+
+# Helper code to load image data
+def load_alive_image(path, max_size, threshold, sigma=1.0):
+
+  img = PIL.Image.open(path)
+  img.thumbnail((max_size, max_size), PIL.Image.ANTIALIAS)
+  img = np.float32(img)/255.0
+  orig_img = img.copy()
+
+  # Concatenate alpha channel initialized with zeros
+  target_img = np.concatenate([img, np.ones_like(img[..., :1])], axis=-1)
+
+  # Premultiply RGB by Alpha
+  target_img[..., :3] *= target_img[..., 3:]
+
+  return target_img, target_img[..., 3], orig_img
