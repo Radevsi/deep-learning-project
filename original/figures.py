@@ -42,10 +42,10 @@ class FigGen:
     self.models = []
     self.ca = ca
 
-  def training_progress_checkpoints(self, damage_n, channel_n):
+  def training_progress_checkpoints(self, damage_n, channel_n, steps):
 
     print("IN checkpoints FUNCTION")
-    for i in [100, 500, 1000, 4000]:
+    for i in steps:
     # for i in [100]:
     # for i in [100, 500, 1000, 2000]:
       self.ca.load_weights('train_log/%04d'%i)
