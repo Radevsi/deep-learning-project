@@ -14,7 +14,7 @@ import os
 os.environ['FFMPEG_BINARY'] = 'ffmpeg'
 
 # Cellular Automata Parameters
-CHANNEL_N = 16        # Number of CA state channels
+CHANNEL_N = 22       # Number of CA state channels
 TARGET_PADDING = 16   # Number of pixels used to pad the target image border
 TARGET_SIZE = 125
 BATCH_SIZE = 8
@@ -66,7 +66,7 @@ class CAModel(tf.keras.Model):
     self.fire_rate = fire_rate
 
     self.dmodel = tf.keras.Sequential([
-          Conv2D(128, 1, activation=tf.nn.relu),
+          Conv2D(160, 1, activation=tf.nn.relu),
           Conv2D(self.channel_n, 1, activation=None,
               kernel_initializer=tf.zeros_initializer),
     ])

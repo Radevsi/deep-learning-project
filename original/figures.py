@@ -10,7 +10,8 @@ import tqdm
 import model
 import utils
 
-PATH = 'figures/bob_ross_painting/persistent/channel-16_hidden-128/'
+# PATH = 'figures/bob_ross_painting/persistent/channel-16_hidden-128/'
+PATH = 'figures/bob_ross_painting/persistent/channel-22_hidden-160/'
 
 # From original Colab
 class VideoWriter:

@@ -28,7 +28,7 @@ def main():
         print("WARNING: Running without GPUs")
 
     # Choose target image
-    CHANNEL_N = 16
+    CHANNEL_N = 22
     # TARGET_EMOJI = "🦎" #@param {type:"string"}
     TARGET_EMOJI = '🛩'
     target_img = load_emoji(TARGET_EMOJI)
