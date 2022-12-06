@@ -81,26 +81,28 @@ def main():
         n_steps = 1
 
     # Train it
-    start_time = time.time()
-    train_ca(ca, target_img, CHANNEL_N, TARGET_PADDING, BATCH_SIZE,
-             POOL_SIZE, USE_PATTERN_POOL, DAMAGE_N, steps=n_steps, path=output_dir)
-    print(f"\nTraining took {time.time() - start_time} seconds")
+    # start_time = time.time()
+    # train_ca(ca, target_img, CHANNEL_N, TARGET_PADDING, BATCH_SIZE,
+    #          POOL_SIZE, USE_PATTERN_POOL, DAMAGE_N, steps=n_steps, path=output_dir)
+    # print(f"\nTraining took {time.time() - start_time} seconds")
 
-    # Save some figures of training progress
-    fig_gen = FigGen(ca, output_dir)
-    steps = [100, 500, 1000, 4000] if gpu else [0]
-    fig_gen.training_progress_batches()
+    # # Save some figures of training progress
+    # fig_gen = FigGen(ca, output_dir)
+    # steps = [100, 500, 1000, 4000] if gpu else [0]
+    # fig_gen.training_progress_batches()
 
-    if DAMAGE_N:
-        fig_gen.training_progress_checkpoints(damage_n=DAMAGE_N, channel_n=CHANNEL_N, steps=steps)
+    # if DAMAGE_N:
+    #     fig_gen.training_progress_checkpoints(damage_n=DAMAGE_N, channel_n=CHANNEL_N, steps=steps)
 
-    if USE_PATTERN_POOL:
-        fig_gen.pool_contents()
+    # if USE_PATTERN_POOL:
+    #     fig_gen.pool_contents()
 
     # Export quantized model for WebGL demo
     if gpu:
+        model = CAModel(channel_n=CHANNEL_N, hidden_size=HIDDEN_SIZE, fire_rate=CELL_FIRE_RATE)
+        model.load_weights(output_dir+'/train_log/')
         with zipfile.ZipFile('webgl_models8.zip', 'w') as zf:
-            zf.writestr(f'{output_dir}/tester.json', export_ca_to_webgl_demo(ca))
+            zf.writestr(f'{output_dir}/tester.json', export_ca_to_webgl_demo(model))
 
 if __name__ == '__main__':
     main()
