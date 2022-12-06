@@ -8,12 +8,9 @@ import numpy as np
 import math
 import tensorflow_addons as tfa
 
-# Hyper-parameter denoting threshold for life
-THRESHOLD = 0.01
-
 # Load an image locally, by initializing a white background with alpha values
 # of zero to denote "dead" cells.
-def load_local_image(path, max_size, threshold=THRESHOLD, sigma=1.0):
+def load_local_image(path, max_size, threshold=0.1, sigma=1.0):
 
   img = PIL.Image.open(path)
   img.thumbnail((max_size, max_size), PIL.Image.ANTIALIAS)

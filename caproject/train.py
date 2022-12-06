@@ -3,27 +3,17 @@
 print('\n...........................IN train.py...........................')
 
 import os
-# import io
-# import PIL.ImageDraw
-# import base64
-# import zipfile
 import json
-# import requests
 import numpy as np
 import matplotlib.pylab as pl
-# import matplotlib.pyplot as plt
-# import glob
 
 import tensorflow as tf
 
-import os
-from tqdm import tqdm
-
-from utils import imshow, imwrite, tile2d 
+from utils import imwrite, tile2d 
 os.environ['FFMPEG_BINARY'] = 'ffmpeg'
 
 # Initialize training
-from model import CAModel, to_rgb, to_rgba
+from model import to_rgb, to_rgba
 
 from google.protobuf.json_format import MessageToDict
 from tensorflow.python.framework import convert_to_constants
@@ -81,7 +71,7 @@ def export_model(ca, base_fn, channel_n):
   with open(base_fn+'.json', 'w') as f:
     json.dump(model_json, f)
 
-def generate_pool_figures(pool, step_i):
+def generate_pool_figures(pool, step_i, path=''):
   tiled_pool = tile2d(to_rgb(pool.x[:49]))
   fade = np.linspace(1.0, 0.0, 72)
   ones = np.ones(72) 
@@ -89,23 +79,23 @@ def generate_pool_figures(pool, step_i):
   tiled_pool[:, -72:] += (-tiled_pool[:, -72:] + ones[None, :, None]) * fade[None, ::-1, None]
   tiled_pool[:72, :] += (-tiled_pool[:72, :] + ones[:, None, None]) * fade[:, None, None]
   tiled_pool[-72:, :] += (-tiled_pool[-72:, :] + ones[:, None, None]) * fade[::-1, None, None]
-  imwrite('train_log/%04d_pool.jpg'%step_i, tiled_pool)
+  imwrite(f'{path}/train_log/%04d_pool.jpg'%step_i, tiled_pool)
 
-def visualize_batch(x0, x, step_i):
+def visualize_batch(x0, x, step_i, path=''):
   vis0 = np.hstack(to_rgb(x0).numpy())
   vis1 = np.hstack(to_rgb(x).numpy())
   vis = np.vstack([vis0, vis1])
-  imwrite('train_log/batches_%04d.jpg'%step_i, vis)
+  imwrite(f'{path}/train_log/batches_%04d.jpg'%step_i, vis)
   # print('batch (before/after):')
   # imshow(vis)
 
-def plot_loss(loss_log, save=False):
+def plot_loss(loss_log, save=False, path=''):
   pl.figure(figsize=(10, 4))
   pl.title('Loss history (log10)')
   pl.plot(np.log10(loss_log), '.', alpha=0.1)
   # pl.show()
   if save:
-    pl.savefig('figures/loss_plot.png')
+    pl.savefig(f'{path}/loss_plot.png')
   else:
     pl.draw()
   
@@ -131,7 +121,7 @@ def train_step(ca, x, trainer, pad_target):
 
 def train_ca(ca, target_img, channel_n, target_padding, batch_size, pool_size,
               use_pattern_pool, damage_n,
-              steps=8000, lr=2e-3):
+              steps=8000, lr=2e-3, path=''):
   """
   Main training function. 
   Equivalent to 'Training Loop' in Colab Notebook.
@@ -174,12 +164,12 @@ def train_ca(ca, target_img, channel_n, target_padding, batch_size, pool_size,
     step_i = len(loss_log)
     loss_log.append(loss.numpy())
     
-    if step_i%10 == 0:
-      generate_pool_figures(pool, step_i)
+    if use_pattern_pool and step_i%10 == 0:
+      generate_pool_figures(pool, step_i, path=path)
     if step_i%100 == 0:
-      visualize_batch(x0, x, step_i)
-      plot_loss(loss_log)
-      export_model(ca, 'train_log/%04d'%step_i, channel_n)
+      visualize_batch(x0, x, step_i, path=path)
+      plot_loss(loss_log, path=path)
+      export_model(ca, f'{path}/train_log/%04d'%step_i, channel_n)
 
-    print('\r step: %d, log10(loss): %.3f'%(len(loss_log), np.log10(loss)), end='')
-  plot_loss(loss_log, save=True)
+    print('\r step: %d/%d, log10(loss): %.3f'%(len(loss_log), steps, np.log10(loss)), end='')
+  plot_loss(loss_log, save=True, path=path)

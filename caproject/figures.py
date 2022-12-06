@@ -10,9 +10,6 @@ import tqdm
 import model
 import utils
 
-# PATH = 'figures/bob_ross_painting/persistent/channel-16_hidden-128/'
-PATH = 'figures/bob_ross_painting/persistent/channel-22_hidden-160/'
-
 # From original Colab
 class VideoWriter:
   def __init__(self, filename, fps=30.0, **kw):
@@ -41,18 +38,19 @@ class VideoWriter:
     self.close()
 
 class FigGen:
-  def __init__(self, ca):
+  def __init__(self, ca, path):
     self.models = []
     self.ca = ca
+    self.path = path
 
   def training_progress_checkpoints(self, damage_n, channel_n, steps):
 
     print("IN checkpoints FUNCTION")
     for i in steps:
-      self.ca.load_weights('train_log/%04d'%i)
+      self.ca.load_weights(f'{self.path}/train_log/%04d'%i)
       self.models.append(self.ca)
 
-    out_fn = 'train_steps_damage_%d.mp4'%damage_n
+    out_fn = f'{self.path}/train_steps_damage_%d.mp4'%damage_n
     x = np.zeros([len(self.models), 72, 72, channel_n], np.float32)
     x[..., 36, 36, 3:] = 1.0
     with VideoWriter(out_fn) as vid:
@@ -64,12 +62,12 @@ class FigGen:
     
     # Make a VideoFileClip object and then write it 
     clip = mvp.VideoFileClip(out_fn)
-    clip.write_videofile(f'{PATH}{out_fn}')
+    clip.write_videofile(f'{out_fn}')
     
   def training_progress_batches(self):
-    frames = sorted(glob.glob('train_log/batches_*.jpg'))
-    mvp.ImageSequenceClip(frames, fps=10.0).write_videofile(f'{PATH}batches.mp4')
+    frames = sorted(glob.glob(f'{self.path}/train_log/batches_*.jpg'))
+    mvp.ImageSequenceClip(frames, fps=10.0).write_videofile(f'{self.path}/batches.mp4')
 
   def pool_contents(self):
-    frames = sorted(glob.glob('train_log/*_pool.jpg'))[:80]
-    mvp.ImageSequenceClip(frames, fps=20.0).write_videofile(f'{PATH}pool.mp4')
+    frames = sorted(glob.glob(f'{self.path}/train_log/*_pool.jpg'))[:80]
+    mvp.ImageSequenceClip(frames, fps=20.0).write_videofile(f'{self.path}/pool.mp4')

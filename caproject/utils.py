@@ -5,9 +5,11 @@ import PIL.Image, PIL.ImageDraw
 import base64
 import numpy as np
 from PIL import Image
+import base64
+import json
 import os
 os.environ['FFMPEG_BINARY'] = 'ffmpeg'
-from moviepy.video.io.ffmpeg_writer import FFMPEG_VideoWriter
+
 
 # Basic image processing utilities
 def np2pil(a):
@@ -37,7 +39,7 @@ def im2url(a, fmt='jpeg'):
   base64_byte_string = base64.b64encode(encoded).decode('ascii')
   return 'data:image/' + fmt.upper() + ';base64,' + base64_byte_string
 
-def imshow(a, fmt='jpeg', SAVE=False):
+def imshow(a, fmt='jpeg', SAVE=False, path=''):
   """Referenced: 
     https://stackoverflow.com/questions/60138697/typeerror-cannot-handle-this-data-type-1-1-3-f4
   """
@@ -45,7 +47,7 @@ def imshow(a, fmt='jpeg', SAVE=False):
   im.show()
   # print(im)
   if SAVE:
-    im.save(f'output/target_img.{fmt}')
+    im.save(f'{path}/target_img.{fmt}')
 #   display(Image(data=imencode(a, fmt)))
 
 def tile2d(a, w=None):
@@ -66,3 +68,35 @@ def zoom(img, scale=4):
   return img
 
 
+# Utils for WebGL Demo
+# This code exports quantized models for the WebGL demo that is used in the article.
+#The demo code can be found at https://github.com/distillpub/post--growing-ca/blob/master/public/ca.js
+
+def pack_layer(weight, bias, outputType=np.uint8):
+  in_ch, out_ch = weight.shape
+  assert (in_ch%4==0) and (out_ch%4==0) and (bias.shape==(out_ch,))
+  weight_scale, bias_scale = 1.0, 1.0
+  if outputType == np.uint8:
+    weight_scale = 2.0*np.abs(weight).max()
+    bias_scale = 2.0*np.abs(bias).max()
+    weight = np.round((weight/weight_scale+0.5)*255)
+    bias = np.round((bias/bias_scale+0.5)*255)
+  packed = np.vstack([weight, bias[None,...]])
+  packed = packed.reshape(in_ch+1, out_ch//4, 4)
+  packed = outputType(packed)
+  packed_b64 = base64.b64encode(packed.tobytes()).decode('ascii')
+  return {'data_b64': packed_b64, 'in_ch': in_ch, 'out_ch': out_ch,
+          'weight_scale': weight_scale, 'bias_scale': bias_scale,
+          'type': outputType.__name__}
+
+def export_ca_to_webgl_demo(ca, outputType=np.uint8):
+  # reorder the first layer inputs to meet webgl demo perception layout
+  chn = ca.channel_n
+  w1 = ca.weights[0][0, 0].numpy()
+  w1 = w1.reshape(chn, 3, -1).transpose(1, 0, 2).reshape(3*chn, -1)
+  layers = [
+      pack_layer(w1, ca.weights[1].numpy(), outputType),
+      pack_layer(ca.weights[2][0, 0].numpy(), ca.weights[3].numpy(), outputType)
+  ]
+  return json.dumps(layers)
+  
