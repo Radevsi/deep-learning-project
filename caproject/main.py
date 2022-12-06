@@ -44,14 +44,14 @@ def main():
     # Pathing variables
     image_name = 'bob-ross-painting'
     output_dir = f'figures/{image_name}/{EXPERIMENT_TYPE}/channel-{CHANNEL_N}_hidden-{HIDDEN_SIZE}'
-    try: # remove all files in train_log folder if it exists
-        for file in os.listdir(output_dir+'/train_log/'):
-            os.remove(output_dir+'/train_log/'+file)
-    except FileNotFoundError: # if it doesn't exist, create it
-        os.makedirs(output_dir+'/train_log/')
-        print(f"Created new directory to store output figures: {output_dir}")   
-    except OSError as e: # catch general OS errors
-        print("Error: %s : %s" % (output_dir+'/train_log/', e.strerror))    
+    # try: # remove all files in train_log folder if it exists
+    #     for file in os.listdir(output_dir+'/train_log/'):
+    #         os.remove(output_dir+'/train_log/'+file)
+    # except FileNotFoundError: # if it doesn't exist, create it
+    #     os.makedirs(output_dir+'/train_log/')
+    #     print(f"Created new directory to store output figures: {output_dir}")   
+    # except OSError as e: # catch general OS errors
+    #     print("Error: %s : %s" % (output_dir+'/train_log/', e.strerror))    
 
     # Select image to run on 
     # TARGET_EMOJI = '🛩'
@@ -67,9 +67,9 @@ def main():
 
     print(f"Using image {image_name}.png with max_size of {TARGET_SIZE}")
 
-    # Initialize model
-    ca = CAModel(channel_n=CHANNEL_N, hidden_size=HIDDEN_SIZE, fire_rate=CELL_FIRE_RATE)
-    ca.dmodel.summary()
+    # # Initialize model
+    # ca = CAModel(channel_n=CHANNEL_N, hidden_size=HIDDEN_SIZE, fire_rate=CELL_FIRE_RATE)
+    # ca.dmodel.summary()
 
     # Check for gpu
     gpu = (tf.config.list_physical_devices('GPU') != [])
@@ -80,27 +80,27 @@ def main():
         print("WARNING: Running without GPUs")
         n_steps = 1
 
-    # Train it
-    start_time = time.time()
-    train_ca(ca, target_img, CHANNEL_N, TARGET_PADDING, BATCH_SIZE,
-             POOL_SIZE, USE_PATTERN_POOL, DAMAGE_N, steps=n_steps, path=output_dir)
-    print(f"\nTraining took {time.time() - start_time} seconds")
+    # # Train it
+    # start_time = time.time()
+    # train_ca(ca, target_img, CHANNEL_N, TARGET_PADDING, BATCH_SIZE,
+    #          POOL_SIZE, USE_PATTERN_POOL, DAMAGE_N, steps=n_steps, path=output_dir)
+    # print(f"\nTraining took {time.time() - start_time} seconds")
 
-    # Save some figures of training progress
-    fig_gen = FigGen(ca, output_dir)
-    steps = [100, 500, 1000, 4000] if gpu else [0]
-    fig_gen.training_progress_batches()
+    # # Save some figures of training progress
+    # fig_gen = FigGen(ca, output_dir)
+    # steps = [100, 500, 1000, 4000] if gpu else [0]
+    # fig_gen.training_progress_batches()
 
-    if DAMAGE_N:
-        fig_gen.training_progress_checkpoints(damage_n=DAMAGE_N, channel_n=CHANNEL_N, steps=steps)
+    # if DAMAGE_N:
+    #     fig_gen.training_progress_checkpoints(damage_n=DAMAGE_N, channel_n=CHANNEL_N, steps=steps)
 
-    if USE_PATTERN_POOL:
-        fig_gen.pool_contents()
+    # if USE_PATTERN_POOL:
+    #     fig_gen.pool_contents()
 
     # Export quantized model for WebGL demo
     if gpu:
         model = CAModel(channel_n=CHANNEL_N, hidden_size=HIDDEN_SIZE, fire_rate=CELL_FIRE_RATE)
-        model.load_weights(output_dir+'/train_log/')
+        model.load_weights(output_dir+'/train_log/%04d'%n_steps)
         with zipfile.ZipFile('webgl_models8.zip', 'w') as zf:
             zf.writestr(f'{output_dir}/tester.json', export_ca_to_webgl_demo(model))
 
