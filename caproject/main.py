@@ -4,6 +4,7 @@ print('\n...........................IN main.py...........................')
 
 # https://stackoverflow.com/questions/35869137/avoid-tensorflow-print-on-standard-error
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 import logging
