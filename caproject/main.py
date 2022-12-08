@@ -71,29 +71,28 @@ def main():
 
     print(f"Using image {image_name}.png with max_size of {TARGET_SIZE}")
 
-    # Check for gpu
-    gpus = tf.config.experimental.list_physical_devices('GPU')
-    if gpus:
-        try:
-            for gpu in gpus:
-                tf.config.experimental.set_memory_growth(gpu, True)
-                logical_gpus = tf.config.list_logical_devices('GPU')
-                print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
-        except RuntimeError as e:
-            print(e)
-    else:
-        print("WARNING: Running without GPUs")
-        n_steps = 1
-
-    # physical_devices = tf.config.experimental.list_physical_devices('GPU')
-    # gpu = (tf.config.list_physical_devices('GPU') != [])
+    # # Check for gpu
     # n_steps = 1000 # training steps
-    # if gpu:
-    #     print("Num GPUs Available:", len(tf.config.list_physical_devices('GPU')))
-    #     tf.config.experimental.set_memory_growth(physical_devices[0], True)
+    # gpus = tf.config.experimental.list_physical_devices('GPU')
+    # if gpus:
+    #     try:
+    #         for gpu in gpus:
+    #             tf.config.experimental.set_memory_growth(gpu, True)
+    #             logical_gpus = tf.config.list_logical_devices('GPU')
+    #             print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
+    #     except RuntimeError as e:
+    #         print(e)
     # else:
     #     print("WARNING: Running without GPUs")
     #     n_steps = 1
+
+    gpus = (tf.config.list_physical_devices('GPU') != [])
+    n_steps = 1000 # training steps
+    if gpus:
+        print("Num GPUs Available:", len(tf.config.list_physical_devices('GPU')))
+    else:
+        print("WARNING: Running without GPUs")
+        n_steps = 1
 
     # Initialize model
     ca = CAModel(channel_n=CHANNEL_N, hidden_size=HIDDEN_SIZE, fire_rate=CELL_FIRE_RATE)
@@ -108,7 +107,7 @@ def main():
 
     # Save some figures of training progress
     fig_gen = FigGen(ca, output_dir)
-    steps = [100, 500, 800, 1000] if gpus else [0]
+    steps = [100, 500, 800, 1000] if gpu else [0]
     fig_gen.training_progress_batches()
 
     if MAKE_CHECKPOINTS:
