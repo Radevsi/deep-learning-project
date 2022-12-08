@@ -25,7 +25,7 @@ def main():
 
     # Cellular Automata Parameters
     HIDDEN_SIZE = 128 # size of hidden layer in CNN
-    CHANNEL_N = 20 # number of CA state channels
+    CHANNEL_N = 16 # number of CA state channels
     TARGET_PADDING = 16 # number of pixels used to pad the target image border
     TARGET_SIZE = 125
     BATCH_SIZE = 8
@@ -71,18 +71,20 @@ def main():
 
     print(f"Using image {image_name}.png with max_size of {TARGET_SIZE}")
 
-    # Initialize model
-    ca = CAModel(channel_n=CHANNEL_N, hidden_size=HIDDEN_SIZE, fire_rate=CELL_FIRE_RATE)
-    ca.dmodel.summary()
-
     # Check for gpu
+    physical_devices = tf.config.experimental.list_physical_devices('GPU')
     gpu = (tf.config.list_physical_devices('GPU') != [])
     n_steps = 1000 # training steps
     if gpu:
         print("Num GPUs Available:", len(tf.config.list_physical_devices('GPU')))
+        tf.config.experimental.set_memory_growth(physical_devices[0], True)
     else:
         print("WARNING: Running without GPUs")
         n_steps = 1
+
+    # Initialize model
+    ca = CAModel(channel_n=CHANNEL_N, hidden_size=HIDDEN_SIZE, fire_rate=CELL_FIRE_RATE)
+    ca.dmodel.summary()
 
     # Train it
     start_time = time.time()
