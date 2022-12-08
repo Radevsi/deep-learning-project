@@ -23,6 +23,28 @@ print('...........................FINISHED IMPORTS...........................')
 
 def main():
 
+    # Sort out which gpu to use
+    with tf.device('/CPU:0'):
+        physical_devices = tf.config.list_physical_devices('GPU') 
+        gpus = (physical_devices != [])
+        n_steps = 1000 # training steps
+    if gpus:
+        print("Num Physical GPUs Available:", len(tf.config.list_physical_devices('GPU')))
+        try:
+            # Disable first GPU
+            tf.config.set_visible_devices(physical_devices[1:], 'GPU')
+            logical_devices = tf.config.list_logical_devices('GPU')
+            print(f"Using {len(logical_devices)} logical gpus")
+            # Logical device was not created for first GPU
+            assert len(logical_devices) == len(physical_devices) - 1  
+        except:
+            # Invalid device or cannot modify virtual devices once initialized.
+            print("ERROR: Invalid device or cannot modify virtual devices once initialized.")
+    else:
+        print("WARNING: Running without GPUs")
+        n_steps = 1
+
+
     # Cellular Automata Parameters
     HIDDEN_SIZE = 128 # size of hidden layer in CNN
     CHANNEL_N = 16 # number of CA state channels
@@ -85,25 +107,6 @@ def main():
     # else:
     #     print("WARNING: Running without GPUs")
     #     n_steps = 1
-
-    physical_devices = tf.config.list_physical_devices('GPU') 
-    gpus = (physical_devices != [])
-    n_steps = 1000 # training steps
-    if gpus:
-        print("Num Physical GPUs Available:", len(tf.config.list_physical_devices('GPU')))
-        try:
-            # Disable first GPU
-            tf.config.set_visible_devices(physical_devices[1:], 'GPU')
-            logical_devices = tf.config.list_logical_devices('GPU')
-            print(f"Using {len(logical_devices)} logical gpus")
-            # Logical device was not created for first GPU
-            assert len(logical_devices) == len(physical_devices) - 1  
-        except:
-            # Invalid device or cannot modify virtual devices once initialized.
-            print("ERROR: Invalid device or cannot modify virtual devices once initialized.")
-    else:
-        print("WARNING: Running without GPUs")
-        n_steps = 1
 
     # Initialize model
     ca = CAModel(channel_n=CHANNEL_N, hidden_size=HIDDEN_SIZE, fire_rate=CELL_FIRE_RATE)
