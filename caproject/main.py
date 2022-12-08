@@ -86,10 +86,21 @@ def main():
     #     print("WARNING: Running without GPUs")
     #     n_steps = 1
 
-    gpus = (tf.config.list_physical_devices('GPU') != [])
+    physical_devices = tf.config.list_physical_devices('GPU') 
+    gpus = (physical_devices != [])
     n_steps = 1000 # training steps
     if gpus:
-        print("Num GPUs Available:", len(tf.config.list_physical_devices('GPU')))
+        print("Num Physical GPUs Available:", len(tf.config.list_physical_devices('GPU')))
+        try:
+            # Disable first GPU
+            tf.config.set_visible_devices(physical_devices[1:], 'GPU')
+            logical_devices = tf.config.list_logical_devices('GPU')
+            print(f"Using {len(logical_devices)} logical gpus")
+            # Logical device was not created for first GPU
+            assert len(logical_devices) == len(physical_devices) - 1  
+        except:
+            # Invalid device or cannot modify virtual devices once initialized.
+            print("ERROR: Invalid device or cannot modify virtual devices once initialized.")
     else:
         print("WARNING: Running without GPUs")
         n_steps = 1
@@ -107,7 +118,7 @@ def main():
 
     # Save some figures of training progress
     fig_gen = FigGen(ca, output_dir)
-    steps = [100, 500, 800, 1000] if gpu else [0]
+    steps = [100, 500, 800, 1000] if gpus else [0]
     fig_gen.training_progress_batches()
 
     if MAKE_CHECKPOINTS:
