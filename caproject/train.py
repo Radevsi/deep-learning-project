@@ -121,7 +121,7 @@ def train_step(ca, x, trainer, pad_target):
 
 def train_ca(ca, target_img, channel_n, target_padding, batch_size, pool_size,
               use_pattern_pool, damage_n,
-              steps=8000, lr=2e-3, path=''):
+              steps=8000, lr=2e-3, path='', make_pool=False):
   """
   Main training function. 
   Equivalent to 'Training Loop' in Colab Notebook.
@@ -164,7 +164,7 @@ def train_ca(ca, target_img, channel_n, target_padding, batch_size, pool_size,
     step_i = len(loss_log)
     loss_log.append(loss.numpy())
     
-    if use_pattern_pool and step_i%10 == 0:
+    if make_pool and step_i%10 == 0:
       generate_pool_figures(pool, step_i, path=path)
     if step_i%100 == 0:
       visualize_batch(x0, x, step_i, path=path)
