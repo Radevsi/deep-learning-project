@@ -98,7 +98,7 @@ def main():
     with tf.device('/CPU:0'):
         physical_devices = tf.config.list_physical_devices('GPU') 
         gpus = (physical_devices != [])
-        n_steps = 1000 # training steps
+        n_steps = 8000 # training steps
     if gpus:
         print("Num Physical GPUs Available:", len(tf.config.list_physical_devices('GPU')))
         # try:
