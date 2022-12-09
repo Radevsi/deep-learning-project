@@ -55,7 +55,7 @@ def main():
 
     # Directory Management
     image_name = 'bob-ross-painting'
-    output_dir = f'figures/{image_name}/{EXPERIMENT_TYPE}/channel-{CHANNEL_N}_hidden-{HIDDEN_SIZE}'
+    output_dir = f'figures/{image_name}-/{EXPERIMENT_TYPE}/channel-{CHANNEL_N}_hidden-{HIDDEN_SIZE}'
     manage_dir(output_dir=output_dir+'/train_log', remove_flag=True)
     # try: # remove all files in train_log folder if it exists
     #     for file in os.listdir(output_dir+'/train_log/'):
@@ -127,8 +127,8 @@ def main():
         image_names = ['bob-ross-painting', 'starry-night']
         target_img1, _, _ = load_alive_image(image_names[0], max_size=125)   
         target_img2, _, _ = load_alive_image(image_names[1], max_size=125)   
-        target_imgs = [(image_names[0], target_img1)]
-        model_params = [(20, 140)]
+        target_imgs = [(image_names[0], target_img1), (image_names[1], target_img2)]
+        model_params = [(20, 140), (20, 140)]
         experiments.experiment1(target_imgs, model_params)  
 
         return 0

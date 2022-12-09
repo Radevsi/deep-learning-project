@@ -98,7 +98,7 @@ class Experiments:
     # plt.plot(figsize=(10, 4))
     for image_name in loss_log_dict:
       # plt.bar(image_name, loss_log_dict[image_name][-1], '.', alpha=0.3)
-      plt.plot(loss_log_dict[image_name], '.', alpha=0.3, label=image_name)
+      plt.plot(np.log10(loss_log_dict[image_name]), '.', alpha=0.3, label=image_name)
     plt.title(f'Loss history (log10) for {len(target_imgs)} images')
     plt.legend()
 
