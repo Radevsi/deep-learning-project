@@ -46,8 +46,8 @@ def load_local_image(path, max_size, threshold=0.1, sigma=1.0):
 # target_img, alpha_channel, orig_img = load_local_image(load_path, 48)
 
 # Helper code to load "alive" image data (no white background).
-def load_alive_image(path, max_size):
-
+def load_alive_image(image_name, max_size):
+  path = f'images/{image_name}.png'
   img = PIL.Image.open(path)
   img.thumbnail((max_size, max_size), PIL.Image.ANTIALIAS)
   img = np.float32(img)/255.0

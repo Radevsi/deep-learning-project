@@ -68,6 +68,21 @@ def zoom(img, scale=4):
   return img
 
 
+# Directory management
+def manage_dir(output_dir, handle_train_log=False):
+  if handle_train_log:
+    output_dir += '/train_log'
+  try: # remove all files in train_log folder if it exists
+      for file in os.listdir(output_dir):
+        if handle_train_log:
+          os.remove(output_dir+'/'+file)
+  except FileNotFoundError: # if it doesn't exist, create it
+      os.makedirs(output_dir)
+      print(f"Created new directory to store output: {output_dir}")   
+  except OSError as e: # catch general OS errors
+      print("Error: %s : %s" % (output_dir, e.strerror))    
+
+
 # Utils for WebGL Demo
 # This code exports quantized models for the WebGL demo that is used in the article.
 #The demo code can be found at https://github.com/distillpub/post--growing-ca/blob/master/public/ca.js

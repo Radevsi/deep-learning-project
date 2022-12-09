@@ -172,4 +172,15 @@ def train_ca(ca, target_img, channel_n, target_padding, batch_size, pool_size,
       export_model(ca, f'{path}/train_log/%04d'%step_i, channel_n)
 
     print('\r step: %d/%d, log10(loss): %.3f'%(len(loss_log), steps, np.log10(loss)), end='')
+
+  # Locally save final loss plot
   plot_loss(loss_log, save=True, path=path)
+
+  # Save the loss_log array
+  with open(path+'/loss_log.npy', 'wb') as file:
+    np.save(file, loss_log)
+
+  # Return the loss array
+  return loss_log
+
+  
