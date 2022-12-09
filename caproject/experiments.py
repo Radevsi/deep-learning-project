@@ -99,7 +99,8 @@ class Experiments:
     # Make the plot
     # plt.plot(figsize=(10, 4))
     for image_name in loss_log_dict:
-      plt.plot(image_name, loss_log_dict[image_name], '.', alpha=0.3)
+      # plt.bar(image_name, loss_log_dict[image_name][-1], '.', alpha=0.3)
+      plt.plot(loss_log_dict[image_name], '.', alpha=0.3)
     plt.title(f'Loss history (log10) for {len(target_imgs)} images')
 
     # Save figure to current timestamp
