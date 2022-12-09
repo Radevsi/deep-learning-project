@@ -87,7 +87,7 @@ def main():
                       "mozart.png":1}
 
         # Run experiments from experiments module
-        experiments = Experiments(EXPERIMENT_TYPE, target_img, CELL_FIRE_RATE, STEP_SIZE, 
+        experiments = Experiments(EXPERIMENT_TYPE, CELL_FIRE_RATE, STEP_SIZE, 
                 HIDDEN_SIZE, CHANNEL_N, TARGET_PADDING, BATCH_SIZE, POOL_SIZE, 
                 USE_PATTERN_POOL, DAMAGE_N, THRESHOLD, LIVING_MAP, n_steps, MAKE_POOL, output_dir)
 
@@ -95,15 +95,6 @@ def main():
         image_names = ['bob-ross-painting', 'starry-night']
         target_sizes = [125, 125]
         model_params = [(40, 512), (20, 140)]
-        # target_imgs = []
-        # assert len(image_names) == len(target_sizes)
-        # for i in range(len(image_names)):
-        #     target_img, _, _ = load_alive_image(image_names[i], max_size=target_sizes[i])   
-        #     target_imgs.append(target_img)
-        # # target_img1, _, _ = load_alive_image(image_names[0], max_size=125)   
-        # # target_img2, _, _ = load_alive_image(image_names[1], max_size=125)   
-        # # target_imgs = [(image_names[0], target_img1), (image_names[1], target_img2)]
-        
         experiments.experiment1(image_names=image_names, target_sizes=target_sizes, model_params=model_params)
 
         return 0

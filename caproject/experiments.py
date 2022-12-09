@@ -2,6 +2,7 @@
 # Experiments for CAProject
 
 import os
+import sys
 import matplotlib.pyplot as plt
 import time
 import numpy as np
@@ -27,18 +28,18 @@ def is_model_trained(path, final_training_point):
         return np.load(file)
     except FileNotFoundError: # In case model was accidentally trained without saving loss_log array
       print(f"WARNING: File {path+'loss_log.npy'} cannot be found")
-      exit()
+      sys.exit()
   else:
     return []
   
 class Experiments:
-  def __init__(self, experiment_type, target_img, cell_fire_rate, step_size, hidden_size, channel_n, 
+  def __init__(self, experiment_type, cell_fire_rate, step_size, hidden_size, channel_n, 
                 target_padding, batch_size, pool_size, use_pattern_pool, damage_n, threshold, living_map,
                 steps, make_pool, path):
     """Note the init is passed in all the default params. It is up to the individual
     experiments to use which params they need and take as input anything else."""
     self.experiment_type = experiment_type
-    self.target_img = target_img
+
     self.cell_fire_rate = cell_fire_rate
     self.step_size = step_size
     self.hidden_size = hidden_size
@@ -85,6 +86,9 @@ class Experiments:
       loss_log = is_model_trained(path, final_training_point=self.steps)
       if loss_log == []: # model not previously trained
 
+        print("EXITING PREMATURELY")
+        sys.exit()
+        
         # Initialize model
         ca = CAModel(channel_n=channel_n, hidden_size=hidden_size, fire_rate=self.cell_fire_rate)
         ca.dmodel.summary()
