@@ -67,16 +67,14 @@ class Experiments:
     # for (image_name, max_size), (channel_n, hidden_size) in zip(image_names, model_params):
     for (image_name, target_img), (channel_n, hidden_size) in zip(target_imgs, model_params):
       # tf.keras.backend.clear_session()
-      path = f'figures/{image_name}/{self.experiment_type}/channel-{channel_n}_hidden-{hidden_size}'
-      manage_dir(path, handle_train_log=True)
-      # load_path = f'images/{image_name}.png'
-      # target_img, _alpha_channel, _orig_img = load_alive_image(load_path, max_size=max_size)
-      # target_imgs.append(target_img)
-      print(f"\nRunning experiment 1 using image {image_name}.png")
 
       # Get loss_log 
       loss_log = is_model_trained(path, final_training_point=self.steps)
+m
       if loss_log == []: # Model not previously trained
+        path = f'figures/{image_name}/{self.experiment_type}/channel-{channel_n}_hidden-{hidden_size}'
+        manage_dir(path, handle_train_log=True)
+        print(f"\nRunning experiment 1 using image {image_name}.png")
 
         # Initialize model
         ca = CAModel(channel_n=channel_n, hidden_size=hidden_size, fire_rate=self.cell_fire_rate)
