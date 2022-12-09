@@ -25,6 +25,17 @@ print('...........................FINISHED IMPORTS...........................')
 
 def main():
 
+    # Sort out which gpu to use
+    with tf.device('/CPU:0'):
+        physical_devices = tf.config.list_physical_devices('GPU') 
+        gpus = (physical_devices != [])
+        n_steps = 8000 # training steps
+    if gpus:
+        print("Num Physical GPUs Available:", len(tf.config.list_physical_devices('GPU')))
+    else:
+        print("WARNING: Running without GPUs")
+        n_steps = 1
+
     # Cellular Automata Parameters
     HIDDEN_SIZE = 512 # size of hidden layer in CNN
     CHANNEL_N = 40 # number of CA state channels
@@ -50,6 +61,25 @@ def main():
     EXPERIMENTS = [1, 0, 0, 0, 0]
     RUN_EXPERIMENTS = True
 
+    if RUN_EXPERIMENTS:
+ 
+        LIVING_MAP = {"bob-ross-painting":1, "starry-night":1, 
+                      "mozart1.png":0, "sleigh.png":0,
+                      "mozart.png":1}
+
+        # Run experiments from experiments module
+        experiments = Experiments(EXPERIMENT_TYPE, CELL_FIRE_RATE, STEP_SIZE, 
+                HIDDEN_SIZE, CHANNEL_N, TARGET_PADDING, BATCH_SIZE, POOL_SIZE, 
+                USE_PATTERN_POOL, DAMAGE_N, THRESHOLD, LIVING_MAP, n_steps, MAKE_POOL)
+
+        # Run first experiment
+        image_names = ['bob-ross-painting', 'starry-night']
+        target_sizes = [125, 125]
+        model_params = [(40, 512), (20, 140)]
+        experiments.experiment1(image_names=image_names, target_sizes=target_sizes, model_params=model_params)
+
+        return 0
+
     # Select image to run on
     image_name = 'bob-ross-painting'
     # TARGET_EMOJI = '🛩'
@@ -68,36 +98,6 @@ def main():
         manage_dir(output_dir=output_dir+'/train_log', remove_flag=True) 
         target_img, _alpha_channel, _orig_img = load_alive_image(image_name, max_size=TARGET_SIZE)
         print(f"Using image {image_name}.png with max_size of {TARGET_SIZE}")
-
-    # Sort out which gpu to use
-    with tf.device('/CPU:0'):
-        physical_devices = tf.config.list_physical_devices('GPU') 
-        gpus = (physical_devices != [])
-        n_steps = 8000 # training steps
-    if gpus:
-        print("Num Physical GPUs Available:", len(tf.config.list_physical_devices('GPU')))
-    else:
-        print("WARNING: Running without GPUs")
-        n_steps = 1
-
-    if RUN_EXPERIMENTS:
- 
-        LIVING_MAP = {"bob-ross-painting":1, "starry-night":1, 
-                      "mozart1.png":0, "sleigh.png":0,
-                      "mozart.png":1}
-
-        # Run experiments from experiments module
-        experiments = Experiments(EXPERIMENT_TYPE, CELL_FIRE_RATE, STEP_SIZE, 
-                HIDDEN_SIZE, CHANNEL_N, TARGET_PADDING, BATCH_SIZE, POOL_SIZE, 
-                USE_PATTERN_POOL, DAMAGE_N, THRESHOLD, LIVING_MAP, n_steps, MAKE_POOL, output_dir)
-
-        # Run first experiment
-        image_names = ['bob-ross-painting', 'starry-night']
-        target_sizes = [125, 125]
-        model_params = [(40, 512), (20, 140)]
-        experiments.experiment1(image_names=image_names, target_sizes=target_sizes, model_params=model_params)
-
-        return 0
 
     # Run the regular model
     # Initialize model

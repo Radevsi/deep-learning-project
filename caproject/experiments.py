@@ -9,6 +9,7 @@ import numpy as np
 import datetime
 from typing import List
 import tensorflow as tf
+from keras.utils.layer_utils import count_params
 
 from model import CAModel
 from train import train_ca
@@ -35,7 +36,7 @@ def is_model_trained(path, final_training_point):
 class Experiments:
   def __init__(self, experiment_type, cell_fire_rate, step_size, hidden_size, channel_n, 
                 target_padding, batch_size, pool_size, use_pattern_pool, damage_n, threshold, living_map,
-                steps, make_pool, path):
+                steps, make_pool):
     """Note the init is passed in all the default params. It is up to the individual
     experiments to use which params they need and take as input anything else."""
     self.experiment_type = experiment_type
@@ -53,7 +54,6 @@ class Experiments:
     self.living_map = living_map
     self.steps = steps    
     self.make_pool = make_pool 
-    self.path = path
   
   def experiment1(self, image_names: List[str], target_sizes: List[int], model_params: List[tuple]):
     """Experiment 1: Show the number of parameters needed for some target
@@ -66,38 +66,44 @@ class Experiments:
     assert len(image_names) == len(model_params)
     loss_log_dict = {}
 
+    # Initialize optimizer since it is a tf.Variable
+    lr = 2e-3
+    lr_sched=tf.keras.optimizers.schedules.PiecewiseConstantDecay(
+      [2000], [lr, lr*0.1])
+    trainer=tf.keras.optimizers.Adam(lr_sched)
+
+    # Define the figure
+    fig, (ax0, ax1) = plt.subplots(nrows=1, ncols=2, figsize=(10, 4))
+
     # Work with each image individually to get the train_log array
     for image_name, target_size, (channel_n, hidden_size) in zip(image_names, target_sizes, model_params):
-
-      # Get target_img array
-      target_img = None
-      if self.living_map[image_name]: # if image is alive
-        target_img, _, _ = load_alive_image(image_name, max_size=target_size)
-        print(f"\nRunning experiment 1 using living image {image_name}.png with target size of {target_size}")
-      else: # append alpha channels otherwise
-        target_img, _, _ = load_local_image(image_name, max_size=target_size, threshold=self.threshold)
-        print(f"\nRunning experiment 1 local image {image_name}.png with target size of {target_size}")
 
       # File management
       path = f'figures/{image_name}-{target_size}/{self.experiment_type}/channel-{channel_n}_hidden-{hidden_size}'
       manage_dir(path+'/train_log', remove_flag=False)
+      print(f"\nRunning experiment 1 using living image {image_name}.png with target size of {target_size}")
+
+      # Initialize the model
+      ca = CAModel(channel_n=channel_n, hidden_size=hidden_size, fire_rate=self.cell_fire_rate)
+      ca.dmodel.summary()
+      n_model_params = count_params(ca.trainable_weights)
 
       # Get loss_log 
       loss_log = is_model_trained(path, final_training_point=self.steps)
       if loss_log == []: # model not previously trained
 
-        print("EXITING PREMATURELY")
-        sys.exit()
-        
-        # Initialize model
-        ca = CAModel(channel_n=channel_n, hidden_size=hidden_size, fire_rate=self.cell_fire_rate)
-        ca.dmodel.summary()
+        # Get target_img array
+        target_img = None
+        if self.living_map[image_name]: # if image is alive
+          target_img, _, _ = load_alive_image(image_name, max_size=target_size)
+        else: # append alpha channels otherwise
+          target_img, _, _ = load_local_image(image_name, max_size=target_size, threshold=self.threshold)
 
         # Train it
         start_time = time.time()
         loss_log = train_ca(ca, target_img, channel_n, self.target_padding, self.batch_size,
-                self.pool_size, self.use_pattern_pool, self.damage_n, steps=self.steps, path=path,
-                make_pool=self.make_pool)
+                self.pool_size, self.use_pattern_pool, self.damage_n, trainer=trainer, steps=self.steps, 
+                path=path, make_pool=self.make_pool)
         print(f"\nTraining took {time.time() - start_time} seconds for image {image_name}.png")
 
         # Save training figures
@@ -106,24 +112,31 @@ class Experiments:
 
         # Clear session and then delete model as per https://github.com/keras-team/keras/issues/5345
         tf.keras.backend.clear_session()
-        del ca
+      del ca
 
       # Append to big dictionary
       loss_log_dict[image_name] = loss_log
 
-    # Make the plot
-    # plt.plot(figsize=(10, 4))
-    for image_name in loss_log_dict:
-      # plt.bar(image_name, loss_log_dict[image_name][-1], '.', alpha=0.3)
-      plt.plot(np.log10(loss_log_dict[image_name]), '.', alpha=0.3, label=image_name)
-    plt.title(f'Loss history (log10) for {len(image_names)} images')
-    plt.legend()
+      # Add the plots to the respective axes
+      log10_loss_log = np.log10(loss_log)
+      ax0.plot(log10_loss_log, '.', alpha=0.2, label=f'{image_name}-{target_size}')
+      ax1.bar(f'{image_name}-{target_size}', n_model_params, label=f'Log10 Loss: {log10_loss_log[-1]}')
+
+    # Style the figure
+    ax0.set_title(f'Loss History (log10) for {len(image_names)} Images')
+    ax0.set_xlabel('Number of Training Steps')
+    ax0.set_ylabel('Negative Log10 Loss')
+    ax0.legend()
+
+    ax1.set_title(f'Number of Model Parameters Used For Each Image')
+    ax1.set_ylabel(f'Number of Model Parameters')
+    ax1.legend()
 
     # Save figure to current timestamp
     output_dir = f'figures/experiments/experiment1/'
     manage_dir(output_dir=output_dir)
     output_file = str(datetime.datetime.now())[:-7]
-    plt.savefig(output_dir+output_file)
+    fig.savefig(output_dir+output_file)
 
 
   # def experiment2(self):

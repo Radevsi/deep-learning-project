@@ -67,7 +67,6 @@ def zoom(img, scale=4):
   img = np.repeat(img, scale, 1)
   return img
 
-
 # Directory management
 def manage_dir(output_dir, remove_flag=False):
   try: # remove all files in output directory folder if remove flag set
@@ -78,7 +77,7 @@ def manage_dir(output_dir, remove_flag=False):
       os.makedirs(output_dir)
       print(f"Created new directory to store output: {output_dir}")   
   except OSError as e: # catch general OS errors
-      print("Error: %s : %s" % (output_dir, e.strerror))    
+      print("Error: %s : %s" % (output_dir, e.strerror)) 
 
 
 # Utils for WebGL Demo

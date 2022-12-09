@@ -105,9 +105,6 @@ def loss_f(x, pad_target):
 @tf.function
 def train_step(ca, x, trainer, pad_target):
   """Applies single training step. Unchanged."""
-  # lr_sched = tf.keras.optimizers.schedules.PiecewiseConstantDecay(
-  #   [2000], [lr, lr*0.1])
-  # trainer = tf.keras.optimizers.Adam(lr_sched)
   iter_n = tf.random.uniform([], 64, 96, tf.int32)
   with tf.GradientTape() as g:
     for i in tf.range(iter_n):
