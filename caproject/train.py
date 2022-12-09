@@ -180,6 +180,8 @@ def train_ca(ca, target_img, channel_n, target_padding, batch_size, pool_size,
   with open(path+'/loss_log.npy', 'wb') as file:
     np.save(file, loss_log)
 
+  print(f"Model achieved final loss of {loss_log[-1]}")
+
   # Return the loss array
   return loss_log
 
