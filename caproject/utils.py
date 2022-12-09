@@ -69,12 +69,10 @@ def zoom(img, scale=4):
 
 
 # Directory management
-def manage_dir(output_dir, handle_train_log=False):
-  if handle_train_log:
-    output_dir += '/train_log'
-  try: # remove all files in train_log folder if it exists
+def manage_dir(output_dir, remove_flag=False):
+  try: # remove all files in output directory folder if remove flag set
       for file in os.listdir(output_dir):
-        if handle_train_log:
+        if remove_flag:
           os.remove(output_dir+'/'+file)
   except FileNotFoundError: # if it doesn't exist, create it
       os.makedirs(output_dir)

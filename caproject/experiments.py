@@ -69,13 +69,12 @@ class Experiments:
       # tf.keras.backend.clear_session()
 
       path = f'figures/{image_name}/{self.experiment_type}/channel-{channel_n}_hidden-{hidden_size}'
+      manage_dir(path, remove_flag=False)
+      print(f"\nRunning experiment 1 using image {image_name}.png")
 
       # Get loss_log 
       loss_log = is_model_trained(path, final_training_point=self.steps)
       if loss_log == []: # Model not previously trained
-        manage_dir(path, handle_train_log=True)
-        print(f"\nRunning experiment 1 using image {image_name}.png")
-
         # Initialize model
         ca = CAModel(channel_n=channel_n, hidden_size=hidden_size, fire_rate=self.cell_fire_rate)
         ca.dmodel.summary()
