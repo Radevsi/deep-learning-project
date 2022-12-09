@@ -50,41 +50,24 @@ def main():
     EXPERIMENTS = [1, 0, 0, 0, 0]
     RUN_EXPERIMENTS = True
 
-    # Input Management
-    TARGET_SIZE = 125
+    # Select image to run on
     image_name = 'bob-ross-painting'
-    output_dir = f'figures/{image_name}-/{EXPERIMENT_TYPE}/channel-{CHANNEL_N}_hidden-{HIDDEN_SIZE}'
-    manage_dir(output_dir=output_dir+'/train_log', remove_flag=True) 
-
-    # Select image to run on 
     # TARGET_EMOJI = '🛩'
     TARGET_EMOJI = None
+    TARGET_SIZE = 125
+    
+    output_dir = f'figures/{image_name}-{TARGET_SIZE}/{EXPERIMENT_TYPE}/channel-{CHANNEL_N}_hidden-{HIDDEN_SIZE}'
+
     if TARGET_EMOJI != None:
         target_img = load_emoji(TARGET_EMOJI)
         print(f'target emoji is {TARGET_EMOJI}')
         output_dir = f'figures/{TARGET_EMOJI}-{TARGET_SIZE}/{EXPERIMENT_TYPE}/channel-{CHANNEL_N}_hidden-{HIDDEN_SIZE}'
         imshow(zoom(to_rgb(target_img), 2), fmt='png', SAVE=True, path=output_dir)
-        
         # print(f'target image is: {target_img}')
     else: 
+        manage_dir(output_dir=output_dir+'/train_log', remove_flag=True) 
         target_img, _alpha_channel, _orig_img = load_alive_image(image_name, max_size=TARGET_SIZE)
-
         print(f"Using image {image_name}.png with max_size of {TARGET_SIZE}")
-
-    # # Check for gpu
-    # n_steps = 1000 # training steps
-    # gpus = tf.config.experimental.list_physical_devices('GPU')
-    # if gpus:
-    #     try:
-    #         for gpu in gpus:
-    #             tf.config.experimental.set_memory_growth(gpu, True)
-    #             logical_gpus = tf.config.list_logical_devices('GPU')
-    #             print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
-    #     except RuntimeError as e:
-    #         print(e)
-    # else:
-    #     print("WARNING: Running without GPUs")
-    #     n_steps = 1
 
     # Sort out which gpu to use
     with tf.device('/CPU:0'):
@@ -93,35 +76,35 @@ def main():
         n_steps = 8000 # training steps
     if gpus:
         print("Num Physical GPUs Available:", len(tf.config.list_physical_devices('GPU')))
-        # try:
-        #     # Disable first GPU
-        #     tf.config.set_visible_devices(physical_devices[1:], 'GPU')
-        #     logical_devices = tf.config.list_logical_devices('GPU')
-        #     print(f"Using {len(logical_devices)} logical gpus")
-        #     # Logical device was not created for first GPU
-        #     assert len(logical_devices) == len(physical_devices) - 1  
-        # except:
-        #     # Invalid device or cannot modify virtual devices once initialized.
-        #     print("ERROR: Invalid device or cannot modify virtual devices once initialized.")
     else:
         print("WARNING: Running without GPUs")
         n_steps = 1
 
     if RUN_EXPERIMENTS:
+ 
+        LIVING_MAP = {"bob-ross-painting":1, "starry-night":1, 
+                      "mozart1.png":0, "sleigh.png":0,
+                      "mozart.png":1}
 
-        # target_img, _, _ = load_alive_image('bob-ross-painting', max_size=125)   
         # Run experiments from experiments module
         experiments = Experiments(EXPERIMENT_TYPE, target_img, CELL_FIRE_RATE, STEP_SIZE, 
                 HIDDEN_SIZE, CHANNEL_N, TARGET_PADDING, BATCH_SIZE, POOL_SIZE, 
-                USE_PATTERN_POOL, DAMAGE_N, n_steps, MAKE_POOL, output_dir)
+                USE_PATTERN_POOL, DAMAGE_N, THRESHOLD, LIVING_MAP, n_steps, MAKE_POOL, output_dir)
 
         # Run first experiment
         image_names = ['bob-ross-painting', 'starry-night']
-        target_img1, _, _ = load_alive_image(image_names[0], max_size=125)   
-        target_img2, _, _ = load_alive_image(image_names[1], max_size=125)   
-        target_imgs = [(image_names[0], target_img1), (image_names[1], target_img2)]
+        target_sizes = [125, 125]
         model_params = [(40, 512), (20, 140)]
-        experiments.experiment1(target_imgs, model_params)  
+        # target_imgs = []
+        # assert len(image_names) == len(target_sizes)
+        # for i in range(len(image_names)):
+        #     target_img, _, _ = load_alive_image(image_names[i], max_size=target_sizes[i])   
+        #     target_imgs.append(target_img)
+        # # target_img1, _, _ = load_alive_image(image_names[0], max_size=125)   
+        # # target_img2, _, _ = load_alive_image(image_names[1], max_size=125)   
+        # # target_imgs = [(image_names[0], target_img1), (image_names[1], target_img2)]
+        
+        experiments.experiment1(image_names=image_names, target_sizes=target_sizes, model_params=model_params)
 
         return 0
 
