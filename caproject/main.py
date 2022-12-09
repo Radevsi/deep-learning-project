@@ -26,8 +26,8 @@ print('...........................FINISHED IMPORTS...........................')
 def main():
 
     # Cellular Automata Parameters
-    HIDDEN_SIZE = 128 # size of hidden layer in CNN
-    CHANNEL_N = 16 # number of CA state channels
+    HIDDEN_SIZE = 512 # size of hidden layer in CNN
+    CHANNEL_N = 40 # number of CA state channels
     TARGET_PADDING = 16 # number of pixels used to pad the target image border
     TARGET_SIZE = 125
     BATCH_SIZE = 8
@@ -128,7 +128,7 @@ def main():
         target_img1, _, _ = load_alive_image(image_names[0], max_size=125)   
         target_img2, _, _ = load_alive_image(image_names[1], max_size=125)   
         target_imgs = [(image_names[0], target_img1), (image_names[1], target_img2)]
-        model_params = [(32, 256), (20, 140)]
+        model_params = [(40, 512), (20, 140)]
         experiments.experiment1(target_imgs, model_params)  
 
         return 0
