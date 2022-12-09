@@ -23,11 +23,11 @@ def is_model_trained(path, final_training_point):
   if f'batches_{final_training_point}.jpg' in os.listdir(path+'/train_log'):
     print(f"Model already trained at {path}")
     try:
-      with open(path+'loss_log.npy', 'rb') as file:
+      with open(path+'/loss_log.npy', 'rb') as file:
         return np.load(file)
     except FileNotFoundError: # In case model was accidentally trained without saving loss_log array
       print(f"WARNING: File {path+'loss_log.npy'} cannot be found")
-      return []
+      exit()
   else:
     return []
   
@@ -68,11 +68,11 @@ class Experiments:
     for (image_name, target_img), (channel_n, hidden_size) in zip(target_imgs, model_params):
       # tf.keras.backend.clear_session()
 
+      path = f'figures/{image_name}/{self.experiment_type}/channel-{channel_n}_hidden-{hidden_size}'
+
       # Get loss_log 
       loss_log = is_model_trained(path, final_training_point=self.steps)
-m
       if loss_log == []: # Model not previously trained
-        path = f'figures/{image_name}/{self.experiment_type}/channel-{channel_n}_hidden-{hidden_size}'
         manage_dir(path, handle_train_log=True)
         print(f"\nRunning experiment 1 using image {image_name}.png")
 
