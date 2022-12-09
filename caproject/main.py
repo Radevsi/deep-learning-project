@@ -29,7 +29,6 @@ def main():
     HIDDEN_SIZE = 128 # size of hidden layer in CNN
     CHANNEL_N = 16 # number of CA state channels
     TARGET_PADDING = 16 # number of pixels used to pad the target image border
-    TARGET_SIZE = 125
     BATCH_SIZE = 8
     POOL_SIZE = 1024
     CELL_FIRE_RATE = 0.5
@@ -51,20 +50,11 @@ def main():
     EXPERIMENTS = [1, 0, 0, 0, 0]
     RUN_EXPERIMENTS = True
 
-    # Do a clean run from scratch
-
-    # Directory Management
+    # Input Management
+    TARGET_SIZE = 125
     image_name = 'bob-ross-painting'
     output_dir = f'figures/{image_name}-/{EXPERIMENT_TYPE}/channel-{CHANNEL_N}_hidden-{HIDDEN_SIZE}'
-    manage_dir(output_dir=output_dir+'/train_log', remove_flag=True)
-    # try: # remove all files in train_log folder if it exists
-    #     for file in os.listdir(output_dir+'/train_log/'):
-    #         os.remove(output_dir+'/train_log/'+file)
-    # except FileNotFoundError: # if it doesn't exist, create it
-    #     os.makedirs(output_dir+'/train_log/')
-    #     print(f"Created new directory to store output figures: {output_dir}")   
-    # except OSError as e: # catch general OS errors
-    #     print("Error: %s : %s" % (output_dir+'/train_log/', e.strerror))    
+    manage_dir(output_dir=output_dir+'/train_log', remove_flag=True) 
 
     # Select image to run on 
     # TARGET_EMOJI = '🛩'
@@ -72,7 +62,9 @@ def main():
     if TARGET_EMOJI != None:
         target_img = load_emoji(TARGET_EMOJI)
         print(f'target emoji is {TARGET_EMOJI}')
-        imshow(zoom(to_rgb(target_img), 2), fmt='png', SAVE=True)
+        output_dir = f'figures/{TARGET_EMOJI}-{TARGET_SIZE}/{EXPERIMENT_TYPE}/channel-{CHANNEL_N}_hidden-{HIDDEN_SIZE}'
+        imshow(zoom(to_rgb(target_img), 2), fmt='png', SAVE=True, path=output_dir)
+        
         # print(f'target image is: {target_img}')
     else: 
         target_img, _alpha_channel, _orig_img = load_alive_image(image_name, max_size=TARGET_SIZE)

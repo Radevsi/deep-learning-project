@@ -120,7 +120,7 @@ def train_step(ca, x, trainer, pad_target):
 
 
 def train_ca(ca, target_img, channel_n, target_padding, batch_size, pool_size,
-              use_pattern_pool, damage_n,
+              use_pattern_pool, damage_n, trainer=None,
               steps=8000, lr=2e-3, path='', make_pool=False):
   """
   Main training function. 
@@ -129,9 +129,10 @@ def train_ca(ca, target_img, channel_n, target_padding, batch_size, pool_size,
 
   p = target_padding
 
-  lr_sched=tf.keras.optimizers.schedules.PiecewiseConstantDecay(
-    [2000], [lr, lr*0.1])
-  trainer=tf.keras.optimizers.Adam(lr_sched)
+  if trainer is None:
+    lr_sched=tf.keras.optimizers.schedules.PiecewiseConstantDecay(
+      [2000], [lr, lr*0.1])
+    trainer=tf.keras.optimizers.Adam(lr_sched)
 
   loss_log = []
   pad_target = tf.pad(target_img, [(p, p), (p, p), (0, 0)])
