@@ -98,14 +98,39 @@ class Experiments:
     # plt.plot(figsize=(10, 4))
     for image_name in loss_log_dict:
       # plt.bar(image_name, loss_log_dict[image_name][-1], '.', alpha=0.3)
-      plt.plot(loss_log_dict[image_name], '.', alpha=0.3)
+      plt.plot(loss_log_dict[image_name], '.', alpha=0.3, label=image_name)
     plt.title(f'Loss history (log10) for {len(target_imgs)} images')
+    plt.legend()
 
     # Save figure to current timestamp
     output_dir = f'figures/experiments/experiment1/'
     manage_dir(output_dir=output_dir)
     output_file = str(datetime.datetime.now())[:-7]
     plt.savefig(output_dir+output_file)
+
+
+  # def experiment2(self):
+  #   pass
+
+  # def experiment3(self, cell_fire_rates: List[float]):
+  #   """Experiment 3: Change the cell_fire_rate parameter and see results"""
+
+    
+    
+
+
+  #   for cell_fire_rate in cell_fire_rates:
+  #     path = f'figures/experiments/experiment3/{self.experiment_type}/channel-{self.channel_n}_hidden-{self.hidden_size}_fr-{cell_fire_rate}'
+  #     ca = CAModel(channel_n=self.channel_n, hidden_size=self.hidden_size, fire_rate=cell_fire_rate)
+  #     ca.dmodel.summary()
+
+  #   # Train it
+  #   start_time = time.time()
+  #   loss_log = train_ca(ca, self.target_img, self.channel_n, self.target_padding, self.batch_size,
+  #           self.pool_size, self.use_pattern_pool, self.damage_n, steps=self.steps, path=path,
+  #           make_pool=self.make_pool)
+  #   print(f"\nTraining took {time.time() - start_time} seconds")      
+
 
     
 

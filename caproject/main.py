@@ -127,9 +127,9 @@ def main():
         image_names = ['bob-ross-painting', 'starry-night']
         target_img1, _, _ = load_alive_image(image_names[0], max_size=125)   
         target_img2, _, _ = load_alive_image(image_names[1], max_size=125)   
-        target_imgs = [(image_names[1], target_img2)]
+        target_imgs = [(image_names[0], target_img1)]
         model_params = [(20, 140)]
-        experiments.experiment1(target_imgs, model_params)   
+        experiments.experiment1(target_imgs, model_params)  
 
         return 0
 
