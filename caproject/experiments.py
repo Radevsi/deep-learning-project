@@ -69,7 +69,7 @@ class Experiments:
       # tf.keras.backend.clear_session()
 
       path = f'figures/{image_name}/{self.experiment_type}/channel-{channel_n}_hidden-{hidden_size}'
-      manage_dir(path, remove_flag=False)
+      manage_dir(path+'/train_log', remove_flag=False)
       print(f"\nRunning experiment 1 using image {image_name}.png")
 
       # Get loss_log 

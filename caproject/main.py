@@ -56,7 +56,7 @@ def main():
     # Directory Management
     image_name = 'bob-ross-painting'
     output_dir = f'figures/{image_name}/{EXPERIMENT_TYPE}/channel-{CHANNEL_N}_hidden-{HIDDEN_SIZE}'
-    manage_dir(output_dir=output_dir, remove_flag=True)
+    manage_dir(output_dir=output_dir+'/train_log', remove_flag=True)
     # try: # remove all files in train_log folder if it exists
     #     for file in os.listdir(output_dir+'/train_log/'):
     #         os.remove(output_dir+'/train_log/'+file)
