@@ -1,6 +1,7 @@
 ## experiments.py
 # Experiments for CAProject
 
+import os
 import matplotlib.pyplot as plt
 import time
 import numpy as np
@@ -18,9 +19,11 @@ def is_model_trained(path, final_training_point):
   """Checks if a particular model has already been trained.
   Note that it does not account for different cell_fire_rate,
   or step_size."""
-
-  if f'batches_{final_training_point}.jpg' in path+'/train_log/':
+  print('INSIDE is_model_trained')
+  print(f'is batches_{final_training_point}.jpg')
+  if f'batches_{final_training_point}.jpg' in os.listdir(path+'/train_log'):
     print(f"Model already trained at {path}")
+    exit()
     try:
       with open(path+'loss_log.npy', 'rb') as file:
         return np.load(file)
@@ -29,7 +32,9 @@ def is_model_trained(path, final_training_point):
       return []
   else:
     return []
+  
 
+  
 class Experiments:
   def __init__(self, experiment_type, target_img, cell_fire_rate, step_size, hidden_size, channel_n, 
                 target_padding, batch_size, pool_size, use_pattern_pool, damage_n, 
@@ -67,6 +72,8 @@ class Experiments:
     for (image_name, target_img), (channel_n, hidden_size) in zip(target_imgs, model_params):
       # tf.keras.backend.clear_session()
       path = f'figures/{image_name}/{self.experiment_type}/channel-{channel_n}_hidden-{hidden_size}'
+      is_model_trained(path, final_training_point=self.steps)
+      exit()
       manage_dir(path, handle_train_log=True)
       # load_path = f'images/{image_name}.png'
       # target_img, _alpha_channel, _orig_img = load_alive_image(load_path, max_size=max_size)
@@ -75,6 +82,7 @@ class Experiments:
 
       # Get loss_log 
       loss_log = is_model_trained(path, final_training_point=self.steps)
+      
       if loss_log == []: # Model not previously trained
 
         # Initialize model
