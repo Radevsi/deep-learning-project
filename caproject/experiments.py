@@ -14,11 +14,12 @@ from image_processing import load_alive_image
 from utils import manage_dir
 from figures import FigGen
 
-def is_model_trained(path, final_training_point='batches_8000.jpg'):
+def is_model_trained(path, final_training_point):
   """Checks if a particular model has already been trained.
   Note that it does not account for different cell_fire_rate,
   or step_size."""
-  if final_training_point in path+'/train_log/':
+
+  if f'batches_{final_training_point}.jpg' in path+'/train_log/':
     print(f"Model already trained at {path}")
     try:
       with open(path+'loss_log.npy', 'rb') as file:
@@ -73,7 +74,7 @@ class Experiments:
       print(f"\nRunning experiment 1 using image {image_name}.png")
 
       # Get loss_log 
-      loss_log = is_model_trained(path)
+      loss_log = is_model_trained(path, final_training_point=self.steps)
       if loss_log == []: # Model not previously trained
 
         # Initialize model
@@ -98,7 +99,7 @@ class Experiments:
     # Make the plot
     # plt.plot(figsize=(10, 4))
     for image_name in loss_log_dict:
-      plt.bar(image_name, loss_log_dict[image_name])
+      plt.plot(image_name, loss_log_dict[image_name], '.', alpha=0.3)
     plt.title(f'Loss history (log10) for {len(target_imgs)} images')
 
     # Save figure to current timestamp
