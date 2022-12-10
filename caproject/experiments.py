@@ -73,7 +73,7 @@ class Experiments:
     trainer=tf.keras.optimizers.Adam(lr_sched)
 
     # Define the figure
-    fig, (ax0, ax1) = plt.subplots(nrows=1, ncols=2, figsize=(10, 4))
+    fig, (ax0, ax1) = plt.subplots(nrows=1, ncols=2, figsize=(14, 4))
 
     # Work with each image individually to get the train_log array
     for image_name, target_size, (channel_n, hidden_size) in zip(image_names, target_sizes, model_params):
@@ -81,7 +81,7 @@ class Experiments:
       # File management
       path = f'figures/{image_name}-{target_size}/{self.experiment_type}/channel-{channel_n}_hidden-{hidden_size}'
       manage_dir(path+'/train_log', remove_flag=False)
-      print(f"\nRunning experiment 1 using living image {image_name}.png with target size of {target_size}")
+      print(f"\nRunning experiment 1 using image {image_name}.png with target size of {target_size}")
 
       # Initialize the model
       ca = CAModel(channel_n=channel_n, hidden_size=hidden_size, fire_rate=self.cell_fire_rate)
@@ -92,6 +92,9 @@ class Experiments:
       loss_log = is_model_trained(path, final_training_point=self.steps)
       if loss_log == []: # model not previously trained
 
+        # print("EXITING PREMATURELY")
+        # sys.exit()
+        
         # Get target_img array
         target_img = None
         if self.living_map[image_name]: # if image is alive
@@ -120,7 +123,7 @@ class Experiments:
       # Add the plots to the respective axes
       log10_loss_log = np.log10(loss_log)
       ax0.plot(log10_loss_log, '.', alpha=0.2, label=f'{image_name}-{target_size}')
-      ax1.bar(f'{image_name}-{target_size}', n_model_params, label=f'Log10 Loss: {log10_loss_log[-1]}')
+      ax1.bar(f'{image_name}-{target_size}', n_model_params, alpha=0.5, label=f'Log10 Loss: {log10_loss_log[-1]:.2f}')
 
     # Style the figure
     ax0.set_title(f'Loss History (log10) for {len(image_names)} Images')

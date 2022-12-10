@@ -112,8 +112,8 @@ def train_step(ca, x, trainer, pad_target):
     loss = tf.reduce_mean(loss_f(x, pad_target))
   grads = g.gradient(loss, ca.weights)
   grads = [g/(tf.norm(g)+1e-8) for g in grads]
-  trainer.apply_gradients(zip(grads, ca.weights))
-  return x, loss
+  # trainer.apply_gradients(zip(grads, ca.weights))
+  return x, loss, grads
 
 
 def train_ca(ca, target_img, channel_n, target_padding, batch_size, pool_size,
@@ -153,7 +153,8 @@ def train_ca(ca, target_img, channel_n, target_padding, batch_size, pool_size,
     else:
       x0 = np.repeat(seed[None, ...], batch_size, 0)
 
-    x, loss = train_step(ca, x0, trainer, pad_target)
+    x, loss, grads = train_step(ca, x0, trainer, pad_target)
+    trainer.apply_gradients(zip(grads, ca.weights)) # gradient update
 
     if use_pattern_pool:
       batch.x[:] = x
