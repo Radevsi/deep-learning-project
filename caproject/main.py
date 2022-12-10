@@ -4,7 +4,7 @@ print('\n...........................IN main.py...........................')
 
 # https://stackoverflow.com/questions/35869137/avoid-tensorflow-print-on-standard-error
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "1,2"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 import logging
@@ -29,7 +29,7 @@ def main():
     with tf.device('/CPU:0'):
         physical_devices = tf.config.list_physical_devices('GPU') 
         gpus = (physical_devices != [])
-        n_steps = 100 # training steps
+        n_steps = 8000 # training steps
     if gpus:
         print("Num Physical GPUs Available:", len(tf.config.list_physical_devices('GPU')))
     else:
@@ -64,8 +64,8 @@ def main():
     if RUN_EXPERIMENTS:
  
         LIVING_MAP = {"bob-ross-painting":1, "starry-night":1, 
-                      "mozart1.png":0, "sleigh.png":0,
-                      "mozart.png":1}
+                      "mozart1":0, "sleigh":0,
+                      "mozart":1}
 
         # Run experiments from experiments module
         experiments = Experiments(EXPERIMENT_TYPE, CELL_FIRE_RATE, STEP_SIZE, 
@@ -73,9 +73,12 @@ def main():
                 USE_PATTERN_POOL, DAMAGE_N, THRESHOLD, LIVING_MAP, n_steps, MAKE_POOL)
 
         # Run first experiment
-        image_names = ['bob-ross-painting', 'starry-night']
-        target_sizes = [125, 125]
-        model_params = [(16, 128), (16, 128)]
+        image_names = ['starry-night']
+        target_sizes = [150]
+        model_params = [(28, 300)]
+        # image_names = ['starry-night', 'starry-night', 'starry-night', 'bob-ross-painting', 'starry-night']
+        # target_sizes = [150, 150, 150, 135, 150]
+        # model_params = [(24, 184), (20, 160), (28, 200), (24, 160), (16, 128)]
         experiments.experiment1(image_names=image_names, target_sizes=target_sizes, model_params=model_params)
 
         return 0
