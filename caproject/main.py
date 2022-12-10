@@ -4,7 +4,7 @@ print('\n...........................IN main.py...........................')
 
 # https://stackoverflow.com/questions/35869137/avoid-tensorflow-print-on-standard-error
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 import logging
@@ -73,12 +73,12 @@ def main():
                 USE_PATTERN_POOL, DAMAGE_N, THRESHOLD, LIVING_MAP, n_steps, MAKE_POOL)
 
         # Run first experiment
-        # image_names = ['bob-ross-painting', 'sleigh']
-        # target_sizes = [135, 48]
-        # model_params = [(40, 256), (16, 128)]
         image_names = ['starry-night']
         target_sizes = [150]
-        model_params = [(40, 256)]
+        model_params = [(28, 300)]
+        # image_names = ['starry-night', 'starry-night', 'starry-night', 'bob-ross-painting', 'starry-night']
+        # target_sizes = [150, 150, 150, 135, 150]
+        # model_params = [(24, 184), (20, 160), (28, 200), (24, 160), (16, 128)]
         experiments.experiment1(image_names=image_names, target_sizes=target_sizes, model_params=model_params)
 
         return 0
