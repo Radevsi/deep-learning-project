@@ -14,6 +14,7 @@ os.environ['FFMPEG_BINARY'] = 'ffmpeg'
 
 # Initialize training
 from model import to_rgb, to_rgba
+from utils import export_ca_to_webgl_demo
 
 from google.protobuf.json_format import MessageToDict
 from tensorflow.python.framework import convert_to_constants
@@ -178,6 +179,9 @@ def train_ca(ca, target_img, channel_n, target_padding, batch_size, pool_size,
   # Save the loss_log array
   with open(path+'/loss_log.npy', 'wb') as file:
     np.save(file, loss_log)
+
+  with open(f'{path}/webgl_model.json', 'w') as outfile:
+    outfile.write(export_ca_to_webgl_demo(ca))
 
   # Return the loss array
   return loss_log

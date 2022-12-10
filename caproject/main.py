@@ -122,12 +122,12 @@ def main():
     if MAKE_POOL:
         fig_gen.pool_contents()
 
-    # Export quantized model for WebGL demo
-    if gpus:
-        model = CAModel(channel_n=CHANNEL_N, hidden_size=HIDDEN_SIZE, fire_rate=CELL_FIRE_RATE)
-        model.load_weights(output_dir+'/train_log/%04d'%n_steps)
-        with zipfile.ZipFile(output_dir+'_webgl.zip', 'w') as zf:
-            zf.writestr(f'channel-{CHANNEL_N}_hidden-{HIDDEN_SIZE}.json', export_ca_to_webgl_demo(model))
+    # # Export quantized model for WebGL demo
+    # if gpus:
+    #     model = CAModel(channel_n=CHANNEL_N, hidden_size=HIDDEN_SIZE, fire_rate=CELL_FIRE_RATE)
+    #     model.load_weights(output_dir+'/train_log/%04d'%n_steps)
+    #     with zipfile.ZipFile(output_dir+'_webgl.zip', 'w') as zf:
+    #         zf.writestr(f'channel-{CHANNEL_N}_hidden-{HIDDEN_SIZE}.json', export_ca_to_webgl_demo(model))
 
 if __name__ == '__main__':
     main()
