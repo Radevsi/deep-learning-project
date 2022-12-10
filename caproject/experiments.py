@@ -22,7 +22,8 @@ def is_model_trained(path, final_training_point):
   Note that it does not account for different cell_fire_rate,
   or step_size."""
   
-  if f'batches_{final_training_point}.jpg' in os.listdir(path+'/train_log'):
+  # if f'batches_{final_training_point}.jpg' in os.listdir(path+'/train_log'):
+  if 'batches_%04d.jpg'%final_training_point in os.listdir(path+'/train_log'):
     print(f"Model already trained at {path}")
     try:
       with open(path+'/loss_log.npy', 'rb') as file:
@@ -128,7 +129,7 @@ class Experiments:
     # Style the figure
     ax0.set_title(f'Loss History (log10) for {len(image_names)} Images')
     ax0.set_xlabel('Number of Training Steps')
-    ax0.set_ylabel('Negative Log10 Loss')
+    ax0.set_ylabel('Log10 Loss')
     ax0.legend()
 
     ax1.set_title(f'Number of Model Parameters Used For Each Image')
