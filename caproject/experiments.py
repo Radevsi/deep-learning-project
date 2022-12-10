@@ -142,8 +142,92 @@ class Experiments:
     fig.savefig(output_dir+output_file)
 
 
-  # def experiment2(self):
-  #   pass
+  def experiment2(self, image_name, target_size, model_params: List[tuple]):
+    """
+    target_img: The target_img array
+    model_params: a list of tuples containing the number of channels and hidden size.
+      Corresponds to same index in image_names array. Note: len(image_names) must equal len(model_params)
+    """
+
+    loss_log_dict = {}
+
+    # Initialize optimizer since it is a tf.Variable
+    lr = 2e-3
+    lr_sched=tf.keras.optimizers.schedules.PiecewiseConstantDecay(
+      [2000], [lr, lr*0.1])
+    trainer=tf.keras.optimizers.Adam(lr_sched)
+
+    # Define the figure
+    fig, (ax0, ax1) = plt.subplots(nrows=1, ncols=2, figsize=(14, 4))
+
+    # Go through all parameters that are asked to be plotted
+    for (channel_n, hidden_size) in model_params:
+
+      # File management
+      path = f'figures/{image_name}-{target_size}/{self.experiment_type}/channel-{channel_n}_hidden-{hidden_size}'
+      manage_dir(path+'/train_log', remove_flag=False)
+      print(f"\nRunning experiment 1 using image {image_name}.png with target size of {target_size}")
+
+      # Initialize the model
+      ca = CAModel(channel_n=channel_n, hidden_size=hidden_size, fire_rate=self.cell_fire_rate)
+      ca.dmodel.summary()
+      n_model_params = count_params(ca.trainable_weights)
+
+      # Get loss_log 
+      loss_log = is_model_trained(path, final_training_point=self.steps)
+      if loss_log == []: # model not previously trained
+
+        # print("EXITING PREMATURELY")
+        # sys.exit()
+        
+        # Get target_img array
+        target_img = None
+        if self.living_map[image_name]: # if image is alive
+          target_img, _, _ = load_alive_image(image_name, max_size=target_size)
+        else: # append alpha channels otherwise
+          target_img, _, _ = load_local_image(image_name, max_size=target_size, threshold=self.threshold)
+
+        # Train it
+        start_time = time.time()
+        loss_log = train_ca(ca, target_img, channel_n, self.target_padding, self.batch_size,
+                self.pool_size, self.use_pattern_pool, self.damage_n, trainer=trainer, steps=self.steps, 
+                path=path, make_pool=self.make_pool)
+        print(f"\nTraining took {time.time() - start_time} seconds for image {image_name}.png")
+
+        # Save training figures
+        fig_gen = FigGen(ca, path)
+        fig_gen.training_progress_batches()
+
+        # Clear session and then delete model as per https://github.com/keras-team/keras/issues/5345
+        tf.keras.backend.clear_session()
+      del ca
+
+      # Append to big dictionary
+      loss_log_dict[image_name] = loss_log
+
+      # Add the plots to the respective axes
+      log10_loss_log = np.log10(loss_log)
+      ax0.plot(log10_loss_log, '.', alpha=0.2, label=f'{image_name}-{target_size}')
+      ax1.bar(f'{image_name}-{target_size}', n_model_params, alpha=0.5, label=f'Log10 Loss: {log10_loss_log[-1]:.2f}')
+
+    # Style the figure
+    ax0.set_title(f'Loss History (log10) for {len(image_names)} Images')
+    ax0.set_xlabel('Number of Training Steps')
+    ax0.set_ylabel('Negative Log10 Loss')
+    ax0.legend()
+
+    ax1.set_title(f'Number of Model Parameters Used For Each Image')
+    ax1.set_ylabel(f'Number of Model Parameters')
+    ax1.legend()
+
+    # Save figure to current timestamp
+    output_dir = f'figures/experiments/experiment1/'
+    manage_dir(output_dir=output_dir)
+    output_file = str(datetime.datetime.now())[:-7]
+    fig.savefig(output_dir+output_file)
+
+    
+
 
   # def experiment3(self, cell_fire_rates: List[float]):
   #   """Experiment 3: Change the cell_fire_rate parameter and see results"""
