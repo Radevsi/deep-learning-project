@@ -2,6 +2,7 @@
 
 print('\n...........................IN model.py...........................')
 
+import sys
 import io
 import PIL.Image, PIL.ImageDraw
 import requests
@@ -55,11 +56,23 @@ class CAModel(tf.keras.Model):
     self.channel_n = channel_n
     self.fire_rate = fire_rate
 
-    self.dmodel = tf.keras.Sequential([
-          Conv2D(hidden_size, 1, activation=tf.nn.relu),
-          Conv2D(self.channel_n, 1, activation=None,
-              kernel_initializer=tf.zeros_initializer),
-    ])
+    self.dmodel = tf.keras.Sequential()
+    if type(hidden_size) == int:
+      self.dmodel.add(Conv2D(hidden_size, 1, activation=tf.nn.relu))
+    elif type(hidden_size) == list:
+      for hs in hidden_size:
+        self.dmodel.add(Conv2D(hs, 1, activation=tf.nn.relu))
+    else:
+      print("WARNING: Tried to pass in a hidden size that is neither an int nor a list")
+      sys.exit(1)
+
+    self.dmodel.add(Conv2D(self.channel_n, 1, activation=None, kernel_initializer=tf.zeros_initializer))
+
+    # self.dmodel = tf.keras.Sequential([
+    #       Conv2D(hidden_size, 1, activation=tf.nn.relu),
+    #       Conv2D(self.channel_n, 1, activation=None,
+    #           kernel_initializer=tf.zeros_initializer),
+    # ])
 
     self(tf.zeros([1, 3, 3, channel_n]))  # dummy call to build the model
 

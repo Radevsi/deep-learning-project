@@ -75,7 +75,7 @@ def main():
         # Run first experiment
         image_names = ['starry-night']
         target_sizes = [150]
-        model_params = [(28, 300)]
+        model_params = [(28, [128, 160])]
         # image_names = ['starry-night', 'starry-night', 'starry-night', 'bob-ross-painting', 'starry-night']
         # target_sizes = [150, 150, 150, 135, 150]
         # model_params = [(24, 184), (20, 160), (28, 200), (24, 160), (16, 128)]
