@@ -4,7 +4,7 @@ print('\n...........................IN main.py...........................')
 
 # https://stackoverflow.com/questions/35869137/avoid-tensorflow-print-on-standard-error
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 import logging
@@ -29,7 +29,7 @@ def main():
     with tf.device('/CPU:0'):
         physical_devices = tf.config.list_physical_devices('GPU') 
         gpus = (physical_devices != [])
-        n_steps = 200 # training steps
+        n_steps = 8000 # training steps
     if gpus:
         print("Num Physical GPUs Available:", len(tf.config.list_physical_devices('GPU')))
     else:
@@ -58,7 +58,7 @@ def main():
     MAKE_POOL = False
 
     # Run experiments parameter
-    EXPERIMENT_NUMBER = 3
+    EXPERIMENT_NUMBER = 4
     RUN_EXPERIMENTS = True
 
     if RUN_EXPERIMENTS:
@@ -112,8 +112,8 @@ def main():
 
             image_name = 'bob-ross-painting'
             target_size = 135
-            channel_n, hidden_size = 12, 100
-            step_sizes = [0.3, 1.0, 3.0]
+            channel_n, hidden_size = 20, 256
+            step_sizes = [0.3, 1.0, 2.0, 3.0]
             
             experiments.experiment4(image_name=image_name, target_size=target_size, channel_n=channel_n, 
                                     hidden_size=hidden_size, step_sizes=step_sizes)                                    

@@ -323,7 +323,8 @@ class Experiments:
     DIR = f'figures/experiments/experiment4/{image_name}-{target_size}/channel-{channel_n}_hidden-{hidden_size_name}'
     print(f"\nRunning experiment 4 using image {image_name}.png with target size of {target_size}")
     
-    plt.figure()
+    # if plt: del plt # delete any old plt objects
+    plt.figure()   
     
     for step_size in step_sizes:
 
@@ -353,12 +354,12 @@ class Experiments:
         tf.keras.backend.clear_session()
       del ca
 
-      plt.plot(loss_log, '.', label=f'step_size of {step_size}')
+      plt.plot(loss_log, '.', alpha=0.3, label=f'step_size of {step_size}')
 
+    plt.xlabel('Time')
+    plt.ylabel('Loss history (log10)') 
     plt.legend()
     plt.title(f'Log10 Loss for {image_name}.png, {channel_n} Channels, and {hidden_size} Hidden Size')
-    plt.xlabel('Time')
-    plt.ylabel('Loss history (log10)')
     plt.savefig(f'{DIR}/loss_plot-{channel_n}-{hidden_size}.png')
     
 
