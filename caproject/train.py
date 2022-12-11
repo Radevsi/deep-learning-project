@@ -90,19 +90,47 @@ def visualize_batch(x0, x, step_i, path=''):
   # print('batch (before/after):')
   # imshow(vis)
 
-def plot_loss(loss_log, channel_n, hidden_size, image_name, target_size, save=False, path=''):
-  pl.figure(figsize=(10, 4))
-  pl.title(f'Log10 Loss For {image_name}.png With Max Size {target_size}')
-  pl.ylabel('Loss history (log10)')
-  pl.xlabel('Time')
-  pl.plot(np.log10(loss_log), '.', alpha=0.1, label=f'{channel_n} Channels, {hidden_size} Hidden Size')
-  pl.legend()
-  # pl.show()
-  if save:
-    pl.savefig(f'{path}/loss_plot-{channel_n}-{hidden_size}.png')
+def plot_loss(loss_log, channel_n, hidden_size, image_name, target_size, 
+              save=False, path='', fig=None, loc=None):
+  assert loc is None or len(loc) == 3
+  ax = None  
+  if fig is None:
+    assert loc is None
+    fig = pl.figure(figsize=(10, 4))
+    ax = fig.add_subplot(1, 1, 1)
+
   else:
-    pl.draw()
-  return pl
+    ax = fig.add_subplot(loc[0], loc[1], loc[2])
+    # ax = fig.add_subplot(spec[)    
+  # print(f"ax is {ax} of type {type(ax)}")
+  ax.plot(np.log10(loss_log), '.', alpha=0.1, label=f'{channel_n} Channels, {hidden_size} Hidden Size')
+  ax.set_title(f'Log10 Loss For {image_name}.png With Max Size {target_size}')
+  ax.set_ylabel('Loss history (log10)')
+  ax.set_xlabel('Time')
+  ax.set_ylim(top=0) # ignore outliers
+  ax.legend()
+  # ax.autoscale(enable=True)
+  # fig.show()
+  if save:
+    fig.savefig(f'{path}/loss_plot-{channel_n}-{hidden_size}.png')
+  # else:
+  #   fig.draw()
+  # pl.draw()
+  return None
+    
+  # pl.figure(figsize=(10, 4))
+  # pl.title(f'Log10 Loss For {image_name}.png With Max Size {target_size}')
+  # pl.ylabel('Loss history (log10)')
+  # pl.xlabel('Time')
+  # pl.plot(np.log10(loss_log), '.', alpha=0.1, label=f'{channel_n} Channels, {hidden_size} Hidden Size')
+  # pl.ylim(top=0) # ignore outliers
+  # pl.legend()
+  # # pl.show()
+  # if save:
+  #   pl.savefig(f'{path}/loss_plot-{channel_n}-{hidden_size}.png')
+  # else:
+  #   pl.draw()
+  # return pl
   
 def loss_f(x, pad_target):
   return tf.reduce_mean(tf.square(to_rgba(x)-pad_target), [-2, -3, -1])

@@ -73,20 +73,20 @@ def main():
                 USE_PATTERN_POOL, DAMAGE_N, THRESHOLD, LIVING_MAP, n_steps, MAKE_POOL)
 
         # Run first experiment
-        # image_names = ['bob-ross-painting', 'bob-ross-painting', 'bob-ross-painting', 'starry-night']
-        # target_sizes = [135, 135, 135, 150]
-        # model_params = [(28, [64, 128]), (28, [128, 64]), (28, [64, 128, 32]), (28, [64, 128, 32])]
+        image_names = ['bob-ross-painting', 'ca-pyramid', 'ca-pyramid', 'ca-pyramid']
+        target_sizes = [135, 300, 300, 300]
+        model_params = [(12, 100), (28, 300), (24, 160), (28, [64, 128, 32])]
         
-        image_names = ['ca-pyramid']
-        target_sizes = [300]
-        model_params = [(16, 128)]
+        # image_names = ['ca-pyramid']
+        # target_sizes = [300]
+        # model_params = [(16, 128)]
 #         image_names = ['sleigh', 'sleigh', 'sleigh', 'sleigh', 'sleigh']
 #         target_sizes = [48, 48, 48, 48, 48]
 #         model_params = [(20, [128, 160, 64]), (20, [64, 128, 32]), (16, [64, 128, 32]), (16, [32, 64]), (16, [32, 64, 128])]
         
-        # image_names = ['starry-night', 'starry-night', 'starry-night', 'bob-ross-painting', 'starry-night']
-        # target_sizes = [150, 150, 150, 135, 150]
-        # model_params = [(24, 184), (20, 160), (28, 200), (24, 160), (16, 128)]
+        # image_names = ['starry-night', 'starry-night', 'starry-night', 'bob-ross-painting', 'starry-night', 'sleigh']
+        # target_sizes = [150, 150, 150, 135, 150, 48]
+        # model_params = [(40, 300), (24, 128), (32, 100), (24, [256, 300]), (12, 100), (24, 256)]
         experiments.experiment1(image_names=image_names, target_sizes=target_sizes, model_params=model_params)
 
         return 0
