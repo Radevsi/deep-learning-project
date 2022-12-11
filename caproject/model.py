@@ -51,10 +51,11 @@ def make_seed(size, channel_n, n=1):
 
 class CAModel(tf.keras.Model):
 
-  def __init__(self, channel_n, hidden_size, fire_rate):
+  def __init__(self, channel_n, hidden_size, fire_rate, step_size=1.0):
     super().__init__()
     self.channel_n = channel_n
     self.fire_rate = fire_rate
+    self.step_size = step_size
 
     self.dmodel = tf.keras.Sequential()
     if type(hidden_size) == int:
@@ -89,14 +90,15 @@ class CAModel(tf.keras.Model):
     return y
 
   @tf.function
-  def call(self, x, fire_rate=None, angle=0.0, step_size=1.0):
+  def call(self, x, fire_rate=None, angle=0.0, step_size=None):
     pre_life_mask = get_living_mask(x)
-
+    
+    if step_size is None:
+      step_size = self.step_size
     y = self.perceive(x, angle)
     dx = self.dmodel(y)*step_size
     if fire_rate is None:
       fire_rate = self.fire_rate
-    print(f"USING FIRE RATE OF {fire_rate}")
     update_mask = tf.random.uniform(tf.shape(x[:, :, :, :1])) <= fire_rate
     x += dx * tf.cast(update_mask, tf.float32)
 

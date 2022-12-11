@@ -4,7 +4,7 @@ print('\n...........................IN main.py...........................')
 
 # https://stackoverflow.com/questions/35869137/avoid-tensorflow-print-on-standard-error
 import os
-# os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 import logging
@@ -29,7 +29,7 @@ def main():
     with tf.device('/CPU:0'):
         physical_devices = tf.config.list_physical_devices('GPU') 
         gpus = (physical_devices != [])
-        n_steps = 200 # training steps
+        n_steps = 8000 # training steps
     if gpus:
         print("Num Physical GPUs Available:", len(tf.config.list_physical_devices('GPU')))
     else:
@@ -58,7 +58,7 @@ def main():
     MAKE_POOL = False
 
     # Run experiments parameter
-    EXPERIMENTS = [1, 0, 0, 0, 0]
+    EXPERIMENT_NUMBER = 3
     RUN_EXPERIMENTS = True
 
     if RUN_EXPERIMENTS:
@@ -72,35 +72,40 @@ def main():
                 HIDDEN_SIZE, CHANNEL_N, TARGET_PADDING, BATCH_SIZE, POOL_SIZE, 
                 USE_PATTERN_POOL, DAMAGE_N, THRESHOLD, LIVING_MAP, n_steps, MAKE_POOL)
 
-        # Run first experiment
-        # image_names = ['bob-ross-painting', 'ca-pyramid', 'ca-pyramid', 'ca-pyramid']
-        # target_sizes = [135, 300, 300, 300]
-        # model_params = [(12, 100), (28, 300), (24, 160), (28, [64, 128, 32])]
-        
-#         image_names = ['starry-night', 'starry-night', 'starry-night', 'starry-night']
-#         target_sizes = [150, 150, 150, 150]
-#         model_params = [(24, 128), (12, 100), (32, 100), (24, [256, 300])]
-    
-        # image_names = ['sleigh']
-        # target_sizes = [48]
-        # model_params = [(20, 128)]
-    
-        image_names = ['mozart', 'mozart1', 'mozart', 'mozart1', 'mozart', 'mozart1', 'mozart', 'mozart1']
-        target_sizes = [48, 48, 48, 48, 48, 48, 48, 48]
-        model_params = [(20, 128), (20, 128), (20, 160), (20, 160), (24, 184), (24, 184), (24, 256), (24, 256)]
-    
-        # image_names = ['starry-night', 'starry-night', 'starry-night', 'bob-ross-painting', 'starry-night', 'sleigh']
-        # target_sizes = [150, 150, 150, 135, 150, 48]
-        # model_params = [(40, 300), (24, 128), (32, 100), (24, [256, 300]), (12, 100), (24, 256)]
-        experiments.experiment1(image_names=image_names, target_sizes=target_sizes, model_params=model_params)
+        ## Experiment 1
+        if EXPERIMENT_NUMBER == 1:
+            # image_names = ['bob-ross-painting', 'ca-pyramid', 'ca-pyramid', 'ca-pyramid']
+            # target_sizes = [135, 300, 300, 300]
+            # model_params = [(12, 100), (28, 300), (24, 160), (28, [64, 128, 32])]
 
-        # Experiment 3 (toggling the cell fire rate)
-        image_name = 'bob-ross-painting'
-        target_size = 135
-        channel_n, hidden_size = 12, 100
-        cell_fire_rates = [0.4, 0.5, 0.7]
-        experiments.experiment3(image_name=image_name, target_size=target_size, channel_n=channel_n, 
-                                hidden_size=hidden_size, cell_fire_rates=cell_fire_rates)
+    #         image_names = ['starry-night', 'starry-night', 'starry-night', 'starry-night']
+    #         target_sizes = [150, 150, 150, 150]
+    #         model_params = [(24, 128), (12, 100), (32, 100), (24, [256, 300])]
+
+            # image_names = ['sleigh']
+            # target_sizes = [48]
+            # model_params = [(20, 128)]
+
+            image_names = ['mozart', 'mozart1', 'mozart', 'mozart1', 'mozart', 'mozart1', 'mozart', 'mozart1']
+            target_sizes = [48, 48, 48, 48, 48, 48, 48, 48]
+            model_params = [(20, 128), (20, 128), (20, 160), (20, 160), (24, 184), (24, 184), (24, 256), (24, 256)]
+
+            # image_names = ['starry-night', 'starry-night', 'starry-night', 'bob-ross-painting', 'starry-night', 'sleigh']
+            # target_sizes = [150, 150, 150, 135, 150, 48]
+            # model_params = [(40, 300), (24, 128), (32, 100), (24, [256, 300]), (12, 100), (24, 256)]
+            experiments.experiment1(image_names=image_names, target_sizes=target_sizes, model_params=model_params)
+
+            
+        ## Experiment 3 (toggling the cell fire rate)
+        if EXPERIMENT_NUMBER == 3:
+
+            image_name = 'bob-ross-painting'
+            target_size = 135
+            channel_n, hidden_size = 12, 100
+            cell_fire_rates = [0.4, 0.5, 0.7]
+            
+            experiments.experiment3(image_name=image_name, target_size=target_size, channel_n=channel_n, 
+                                    hidden_size=hidden_size, cell_fire_rates=cell_fire_rates)
 
         return 0
 

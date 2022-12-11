@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import time
 import numpy as np
 import datetime
-from typing import List, Int, ByteString
+from typing import List
 import tensorflow as tf
 from keras.utils.layer_utils import count_params
 
@@ -230,8 +230,8 @@ class Experiments:
     fig.savefig(output_dir+output_file)
 
 
-  def experiment3(self, image_name: ByteString, target_size: Int, 
-        channel_n: Int, hidden_size: Int, cell_fire_rates: List[float]):
+  def experiment3(self, image_name, target_size, 
+        channel_n, hidden_size, cell_fire_rates: List[float]):
     """Experiment 3: Change the cell_fire_rate parameter and see results"""
 
     loss_log_dict = {}
@@ -247,10 +247,6 @@ class Experiments:
     if type(hidden_size) == list:
           hidden_size_name = '-'.join(str(e) for e in hidden_size)
 
-    # Initialize the model
-    ca = CAModel(channel_n=channel_n, hidden_size=hidden_size, fire_rate=self.cell_fire_rate)
-    ca.dmodel.summary()
-
     # Get target_img array
     target_img = None
     if self.living_map[image_name]:
@@ -258,13 +254,19 @@ class Experiments:
     else:
       target_img, _, _ = load_local_image(image_name, max_size=target_size, threshold=self.threshold)
 
+    DIR = f'figures/experiments/experiment3/{image_name}-{target_size}/channel-{channel_n}_hidden-{hidden_size_name}'
+    print(f"\nRunning experiment 3 using image {image_name}.png with target size of {target_size}")
+    
+    plt.figure()
+    
     for cell_fire_rate in cell_fire_rates:
-      path = f'figures/experiments/experiment3/{self.experiment_type}/channel-{channel_n}_hidden-{hidden_size_name}_fr-{cell_fire_rate}'
-      manage_dir(path+'/train_log', remove_flag=False)
-      print(f"\nRunning experiment 3 (Fire Rate of {cell_fire_rate}) using image {image_name}.png with target size of {target_size}")
 
+      path = DIR + f'/fire_rate-{cell_fire_rate}'
+      manage_dir(path+'/train_log', remove_flag=False)
+        
       ca = CAModel(channel_n=channel_n, hidden_size=hidden_size, fire_rate=cell_fire_rate)
       ca.dmodel.summary()
+      print(f'Fire Rate = {cell_fire_rate}')
 
       # Get loss_log 
       loss_log = is_model_trained(path, final_training_point=self.steps)
@@ -285,13 +287,15 @@ class Experiments:
         tf.keras.backend.clear_session()
       del ca
 
-      plt.plot(loss_log, '.', xlabel='time', ylabel='Loss history (log10)', label=f'fire_rate of {cell_fire_rate}')
+      plt.plot(loss_log, '.', label=f'fire_rate of {cell_fire_rate}')
       # Append to big dictionary
       loss_log_dict[cell_fire_rate] = loss_log
 
     plt.legend()
-    plt.title(f'Log10 Loss for {image_name}.png with Max Size {target_size}, {channel_n} Channels, and {hidden_size} Hidden Size')
-    plt.savefig(f'{path}/loss_plot-{channel_n}-{hidden_size}-{cell_fire_rate}.png')
+    plt.title(f'Log10 Loss for {image_name}.png, {channel_n} Channels, and {hidden_size} Hidden Size')
+    plt.xlabel('Time')
+    plt.ylabel('Loss history (log10)')
+    plt.savefig(f'{DIR}/loss_plot-{channel_n}-{hidden_size}.png')
 
 
     
