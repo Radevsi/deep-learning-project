@@ -298,6 +298,68 @@ class Experiments:
     plt.savefig(f'{DIR}/loss_plot-{channel_n}-{hidden_size}.png')
 
 
+  def experiment4(self, image_name, target_size, 
+        channel_n, hidden_size, step_sizes: List[float]):
+    """Experiment 4: Change the step_size parameter and see results"""
+
+    # Initialize optimizer since it is a tf.Variable
+    lr = 2e-3
+    lr_sched=tf.keras.optimizers.schedules.PiecewiseConstantDecay(
+      [2000], [lr, lr*0.1])
+    trainer=tf.keras.optimizers.Adam(lr_sched)
+
+    # File management
+    hidden_size_name = hidden_size
+    if type(hidden_size) == list:
+          hidden_size_name = '-'.join(str(e) for e in hidden_size)
+
+    # Get target_img array
+    target_img = None
+    if self.living_map[image_name]:
+      target_img, _, _ = load_alive_image(image_name, max_size=target_size)
+    else:
+      target_img, _, _ = load_local_image(image_name, max_size=target_size, threshold=self.threshold)
+
+    DIR = f'figures/experiments/experiment4/{image_name}-{target_size}/channel-{channel_n}_hidden-{hidden_size_name}'
+    print(f"\nRunning experiment 4 using image {image_name}.png with target size of {target_size}")
+    
+    plt.figure()
+    
+    for step_size in step_sizes:
+
+      path = DIR + f'/step_size-{step_size}'
+      manage_dir(path+'/train_log', remove_flag=False)
+        
+      ca = CAModel(channel_n=channel_n, hidden_size=hidden_size, fire_rate=self.cell_fire_rate, step_size=step_size)
+      ca.dmodel.summary()
+      print(f'Step Size = {step_size}')
+
+      # Get loss_log 
+      loss_log = is_model_trained(path, final_training_point=self.steps)
+      if loss_log == []: # model not previously trained
+
+        # Train it
+        start_time = time.time()
+        loss_log = train_ca(ca, image_name, target_size, target_img, channel_n, hidden_size, 
+                self.target_padding, self.batch_size, self.pool_size, self.use_pattern_pool,
+                self.damage_n, trainer=trainer, steps=self.steps, path=path, make_pool=self.make_pool)
+        print(f"\nTraining took {time.time() - start_time} seconds")      
+
+        # Save training figures
+        fig_gen = FigGen(ca, path)
+        fig_gen.training_progress_batches()
+
+        # Clear session and then delete model as per https://github.com/keras-team/keras/issues/5345
+        tf.keras.backend.clear_session()
+      del ca
+
+      plt.plot(loss_log, '.', label=f'step_size of {step_size}')
+
+    plt.legend()
+    plt.title(f'Log10 Loss for {image_name}.png, {channel_n} Channels, and {hidden_size} Hidden Size')
+    plt.xlabel('Time')
+    plt.ylabel('Loss history (log10)')
+    plt.savefig(f'{DIR}/loss_plot-{channel_n}-{hidden_size}.png')
     
 
 

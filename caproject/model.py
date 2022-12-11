@@ -95,6 +95,7 @@ class CAModel(tf.keras.Model):
     
     if step_size is None:
       step_size = self.step_size
+    print(f"USING step_size OF {step_size}")
     y = self.perceive(x, angle)
     dx = self.dmodel(y)*step_size
     if fire_rate is None:

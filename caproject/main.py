@@ -29,7 +29,7 @@ def main():
     with tf.device('/CPU:0'):
         physical_devices = tf.config.list_physical_devices('GPU') 
         gpus = (physical_devices != [])
-        n_steps = 8000 # training steps
+        n_steps = 200 # training steps
     if gpus:
         print("Num Physical GPUs Available:", len(tf.config.list_physical_devices('GPU')))
     else:
@@ -106,6 +106,17 @@ def main():
             
             experiments.experiment3(image_name=image_name, target_size=target_size, channel_n=channel_n, 
                                     hidden_size=hidden_size, cell_fire_rates=cell_fire_rates)
+
+        ## Experiment 4 (toggling the step size)
+        if EXPERIMENT_NUMBER == 4:
+
+            image_name = 'bob-ross-painting'
+            target_size = 135
+            channel_n, hidden_size = 12, 100
+            step_sizes = [0.3, 1.0, 3.0]
+            
+            experiments.experiment4(image_name=image_name, target_size=target_size, channel_n=channel_n, 
+                                    hidden_size=hidden_size, step_sizes=step_sizes)                                    
 
         return 0
 

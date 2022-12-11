@@ -59,7 +59,8 @@ def export_model(ca, base_fn, channel_n):
       x=tf.TensorSpec([None, None, None, channel_n]),
       fire_rate=tf.constant(0.5),
       angle=tf.constant(0.0),
-      step_size=tf.constant(1.0))
+      step_size=None) # Use step_size passed into model initialization
+      # step_size=tf.constant(1.0))
   cf = convert_to_constants.convert_variables_to_constants_v2(cf)
   graph_def = cf.graph.as_graph_def()
   graph_json = MessageToDict(graph_def)
