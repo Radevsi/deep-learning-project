@@ -149,9 +149,9 @@ def train_step(ca, x, trainer, pad_target):
   return x, loss, grads
 
 
-def train_ca(ca, image_name, target_size, target_img, channel_n, hidden_size, target_padding, batch_size, pool_size,
-              use_pattern_pool, damage_n, trainer=None,
-              steps=8000, lr=2e-3, path='', make_pool=False):
+def train_ca(ca, image_name, target_size, target_img, channel_n, hidden_size, 
+              target_padding, batch_size, pool_size, use_pattern_pool, damage_n, 
+              trainer=None, steps=8000, lr=2e-3, path='', make_pool=False):
   """
   Main training function. 
   Equivalent to 'Training Loop' in Colab Notebook.

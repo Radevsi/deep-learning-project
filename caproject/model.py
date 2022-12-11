@@ -96,6 +96,7 @@ class CAModel(tf.keras.Model):
     dx = self.dmodel(y)*step_size
     if fire_rate is None:
       fire_rate = self.fire_rate
+    print(f"USING FIRE RATE OF {fire_rate}")
     update_mask = tf.random.uniform(tf.shape(x[:, :, :, :1])) <= fire_rate
     x += dx * tf.cast(update_mask, tf.float32)
 
