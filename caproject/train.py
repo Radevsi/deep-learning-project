@@ -90,15 +90,19 @@ def visualize_batch(x0, x, step_i, path=''):
   # print('batch (before/after):')
   # imshow(vis)
 
-def plot_loss(loss_log, save=False, path=''):
+def plot_loss(loss_log, channel_n, hidden_size, image_name, target_size, save=False, path=''):
   pl.figure(figsize=(10, 4))
-  pl.title('Loss history (log10)')
-  pl.plot(np.log10(loss_log), '.', alpha=0.1)
+  pl.title(f'Log10 Loss For {image_name}.png With Max Size {target_size}')
+  pl.ylabel('Loss history (log10)')
+  pl.xlabel('Time')
+  pl.plot(np.log10(loss_log), '.', alpha=0.1, label=f'{channel_n} Channels, {hidden_size} Hidden Size')
+  pl.legend()
   # pl.show()
   if save:
-    pl.savefig(f'{path}/loss_plot.png')
+    pl.savefig(f'{path}/loss_plot-{channel_n}-{hidden_size}.png')
   else:
     pl.draw()
+  return pl
   
 def loss_f(x, pad_target):
   return tf.reduce_mean(tf.square(to_rgba(x)-pad_target), [-2, -3, -1])
@@ -117,7 +121,7 @@ def train_step(ca, x, trainer, pad_target):
   return x, loss, grads
 
 
-def train_ca(ca, target_img, channel_n, target_padding, batch_size, pool_size,
+def train_ca(ca, image_name, target_size, target_img, channel_n, hidden_size, target_padding, batch_size, pool_size,
               use_pattern_pool, damage_n, trainer=None,
               steps=8000, lr=2e-3, path='', make_pool=False):
   """
@@ -159,7 +163,7 @@ def train_ca(ca, target_img, channel_n, target_padding, batch_size, pool_size,
 
     if use_pattern_pool:
       batch.x[:] = x
-      batch.commit()
+      # batch.commit()
 
     step_i = len(loss_log)
     loss_log.append(loss.numpy())
@@ -168,13 +172,14 @@ def train_ca(ca, target_img, channel_n, target_padding, batch_size, pool_size,
       generate_pool_figures(pool, step_i, path=path)
     if step_i%100 == 0:
       visualize_batch(x0, x, step_i, path=path)
-      plot_loss(loss_log, path=path)
+      plot_loss(loss_log, channel_n, hidden_size, image_name, target_size, path=path)
       export_model(ca, f'{path}/train_log/%04d'%step_i, channel_n)
 
     print('\r step: %d/%d, log10(loss): %.3f'%(len(loss_log), steps, np.log10(loss)), end='')
 
   # Locally save final loss plot
-  plot_loss(loss_log, save=True, path=path)
+  # plot_loss(loss_log, save=True, path=path)
+  plot_loss(loss_log, channel_n, hidden_size, image_name, target_size, path=path, save=True)
 
   # Save the loss_log array
   with open(path+'/loss_log.npy', 'wb') as file:

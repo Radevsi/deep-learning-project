@@ -24,13 +24,13 @@ def is_model_trained(path, final_training_point):
   
   # if f'batches_{final_training_point}.jpg' in os.listdir(path+'/train_log'):
   if 'batches_%04d.jpg'%final_training_point in os.listdir(path+'/train_log'):
-    print(f"Model already trained at {path}")
     try:
       with open(path+'/loss_log.npy', 'rb') as file:
         return np.load(file)
     except FileNotFoundError: # In case model was accidentally trained without saving loss_log array
-      print(f"WARNING: File {path+'loss_log.npy'} cannot be found")
+      print(f"WARNING: File {path+'/loss_log.npy'} cannot be found")
       sys.exit()
+    print(f"Model already trained at {path}")
   else:
     return []
   
@@ -80,7 +80,10 @@ class Experiments:
     for image_name, target_size, (channel_n, hidden_size) in zip(image_names, target_sizes, model_params):
 
       # File management
-      path = f'figures/{image_name}-{target_size}/{self.experiment_type}/channel-{channel_n}_hidden-{hidden_size}'
+      hidden_size_name = hidden_size
+      if type(hidden_size) == list:
+            hidden_size_name = '-'.join(str(e) for e in hidden_size)
+      path = f'figures/{image_name}-{target_size}/{self.experiment_type}/channel-{channel_n}_hidden-{hidden_size_name}'
       manage_dir(path+'/train_log', remove_flag=False)
       print(f"\nRunning experiment 1 using image {image_name}.png with target size of {target_size}")
 
@@ -105,7 +108,7 @@ class Experiments:
 
         # Train it
         start_time = time.time()
-        loss_log = train_ca(ca, target_img, channel_n, self.target_padding, self.batch_size,
+        loss_log = train_ca(ca, image_name, target_size, target_img, channel_n, hidden_size, self.target_padding, self.batch_size,
                 self.pool_size, self.use_pattern_pool, self.damage_n, trainer=trainer, steps=self.steps, 
                 path=path, make_pool=self.make_pool)
         print(f"\nTraining took {time.time() - start_time} seconds for image {image_name}.png")
@@ -124,7 +127,7 @@ class Experiments:
       # Add the plots to the respective axes
       log10_loss_log = np.log10(loss_log)
       ax0.plot(log10_loss_log, '.', alpha=0.2, label=f'{image_name}-{target_size}')
-      ax1.bar(f'{image_name}-{target_size}', n_model_params, alpha=0.5, label=f'Log10 Loss: {log10_loss_log[-1]:.2f}')
+      ax1.bar(f'{image_name}-{target_size}-{channel_n}-{hidden_size}', n_model_params, alpha=0.5, label=f'Log10 Loss: {log10_loss_log[-1]:.2f}')
 
     # Style the figure
     ax0.set_title(f'Loss History (log10) for {len(image_names)} Images')

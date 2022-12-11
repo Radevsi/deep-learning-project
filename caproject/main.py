@@ -4,7 +4,7 @@ print('\n...........................IN main.py...........................')
 
 # https://stackoverflow.com/questions/35869137/avoid-tensorflow-print-on-standard-error
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 import logging
@@ -64,7 +64,7 @@ def main():
     if RUN_EXPERIMENTS:
  
         LIVING_MAP = {"bob-ross-painting":1, "starry-night":1, 
-                      "mozart1":0, "sleigh":0,
+                      "mozart1":0, "sleigh":0, "ca-pyramid":0,
                       "mozart":1}
 
         # Run experiments from experiments module
@@ -73,9 +73,17 @@ def main():
                 USE_PATTERN_POOL, DAMAGE_N, THRESHOLD, LIVING_MAP, n_steps, MAKE_POOL)
 
         # Run first experiment
-        image_names = ['starry-night']
-        target_sizes = [150]
-        model_params = [(28, [128, 160])]
+        # image_names = ['bob-ross-painting', 'bob-ross-painting', 'bob-ross-painting', 'starry-night']
+        # target_sizes = [135, 135, 135, 150]
+        # model_params = [(28, [64, 128]), (28, [128, 64]), (28, [64, 128, 32]), (28, [64, 128, 32])]
+        
+        image_names = ['ca-pyramid']
+        target_sizes = [300]
+        model_params = [(16, 128)]
+#         image_names = ['sleigh', 'sleigh', 'sleigh', 'sleigh', 'sleigh']
+#         target_sizes = [48, 48, 48, 48, 48]
+#         model_params = [(20, [128, 160, 64]), (20, [64, 128, 32]), (16, [64, 128, 32]), (16, [32, 64]), (16, [32, 64, 128])]
+        
         # image_names = ['starry-night', 'starry-night', 'starry-night', 'bob-ross-painting', 'starry-night']
         # target_sizes = [150, 150, 150, 135, 150]
         # model_params = [(24, 184), (20, 160), (28, 200), (24, 160), (16, 128)]
@@ -109,7 +117,7 @@ def main():
 
     # Train it
     start_time = time.time()
-    _ = train_ca(ca, target_img, CHANNEL_N, TARGET_PADDING, BATCH_SIZE,
+    _ = train_ca(ca, image_name, target_size, target_img, CHANNEL_N, HIDDEN_SIZE, TARGET_PADDING, BATCH_SIZE,
             POOL_SIZE, USE_PATTERN_POOL, DAMAGE_N, steps=n_steps, path=output_dir,
             make_pool=MAKE_POOL)
     print(f"\nTraining took {time.time() - start_time} seconds")
