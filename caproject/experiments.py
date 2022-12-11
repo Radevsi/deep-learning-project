@@ -233,24 +233,24 @@ class Experiments:
     
 
 
-  # def experiment3(self, cell_fire_rates: List[float]):
-  #   """Experiment 3: Change the cell_fire_rate parameter and see results"""
+  def experiment3(self, cell_fire_rates: List[float]):
+    """Experiment 3: Change the cell_fire_rate parameter and see results"""
 
     
     
 
 
-  #   for cell_fire_rate in cell_fire_rates:
-  #     path = f'figures/experiments/experiment3/{self.experiment_type}/channel-{self.channel_n}_hidden-{self.hidden_size}_fr-{cell_fire_rate}'
-  #     ca = CAModel(channel_n=self.channel_n, hidden_size=self.hidden_size, fire_rate=cell_fire_rate)
-  #     ca.dmodel.summary()
+    for cell_fire_rate in cell_fire_rates:
+      path = f'figures/experiments/experiment3/{self.experiment_type}/channel-{self.channel_n}_hidden-{self.hidden_size}_fr-{cell_fire_rate}'
+      ca = CAModel(channel_n=self.channel_n, hidden_size=self.hidden_size, fire_rate=cell_fire_rate)
+      ca.dmodel.summary()
 
-  #   # Train it
-  #   start_time = time.time()
-  #   loss_log = train_ca(ca, self.target_img, self.channel_n, self.target_padding, self.batch_size,
-  #           self.pool_size, self.use_pattern_pool, self.damage_n, steps=self.steps, path=path,
-  #           make_pool=self.make_pool)
-  #   print(f"\nTraining took {time.time() - start_time} seconds")      
+    # Train it
+    start_time = time.time()
+    loss_log = train_ca(ca, self.target_img, self.channel_n, self.target_padding, self.batch_size,
+            self.pool_size, self.use_pattern_pool, self.damage_n, steps=self.steps, path=path,
+            make_pool=self.make_pool)
+    print(f"\nTraining took {time.time() - start_time} seconds")      
 
 
     

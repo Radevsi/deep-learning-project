@@ -4,7 +4,7 @@ print('\n...........................IN main.py...........................')
 
 # https://stackoverflow.com/questions/35869137/avoid-tensorflow-print-on-standard-error
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 import logging
@@ -73,17 +73,22 @@ def main():
                 USE_PATTERN_POOL, DAMAGE_N, THRESHOLD, LIVING_MAP, n_steps, MAKE_POOL)
 
         # Run first experiment
-        image_names = ['bob-ross-painting', 'ca-pyramid', 'ca-pyramid', 'ca-pyramid']
-        target_sizes = [135, 300, 300, 300]
-        model_params = [(12, 100), (28, 300), (24, 160), (28, [64, 128, 32])]
+        # image_names = ['bob-ross-painting', 'ca-pyramid', 'ca-pyramid', 'ca-pyramid']
+        # target_sizes = [135, 300, 300, 300]
+        # model_params = [(12, 100), (28, 300), (24, 160), (28, [64, 128, 32])]
         
-        # image_names = ['ca-pyramid']
-        # target_sizes = [300]
-        # model_params = [(16, 128)]
-#         image_names = ['sleigh', 'sleigh', 'sleigh', 'sleigh', 'sleigh']
-#         target_sizes = [48, 48, 48, 48, 48]
-#         model_params = [(20, [128, 160, 64]), (20, [64, 128, 32]), (16, [64, 128, 32]), (16, [32, 64]), (16, [32, 64, 128])]
-        
+#         image_names = ['starry-night', 'starry-night', 'starry-night', 'starry-night']
+#         target_sizes = [150, 150, 150, 150]
+#         model_params = [(24, 128), (12, 100), (32, 100), (24, [256, 300])]
+    
+        # image_names = ['sleigh']
+        # target_sizes = [48]
+        # model_params = [(20, 128)]
+    
+        image_names = ['mozart', 'mozart1', 'mozart', 'mozart1', 'mozart', 'mozart1', 'mozart', 'mozart1']
+        target_sizes = [48, 48, 48, 48, 48, 48, 48, 48]
+        model_params = [(20, 128), (20, 128), (20, 160), (20, 160), (24, 184), (24, 184), (24, 256), (24, 256)]
+    
         # image_names = ['starry-night', 'starry-night', 'starry-night', 'bob-ross-painting', 'starry-night', 'sleigh']
         # target_sizes = [150, 150, 150, 135, 150, 48]
         # model_params = [(40, 300), (24, 128), (32, 100), (24, [256, 300]), (12, 100), (24, 256)]

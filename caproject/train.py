@@ -205,13 +205,13 @@ def train_ca(ca, image_name, target_size, target_img, channel_n, hidden_size, ta
 
     print('\r step: %d/%d, log10(loss): %.3f'%(len(loss_log), steps, np.log10(loss)), end='')
 
-  # Locally save final loss plot
-  # plot_loss(loss_log, save=True, path=path)
-  plot_loss(loss_log, channel_n, hidden_size, image_name, target_size, path=path, save=True)
-
   # Save the loss_log array
   with open(path+'/loss_log.npy', 'wb') as file:
     np.save(file, loss_log)
+    
+  # Locally save final loss plot
+  # plot_loss(loss_log, save=True, path=path)
+  plot_loss(loss_log, channel_n, hidden_size, image_name, target_size, path=path, save=True)
 
   with open(f'{path}/webgl_model.json', 'w') as outfile:
     outfile.write(export_ca_to_webgl_demo(ca))
