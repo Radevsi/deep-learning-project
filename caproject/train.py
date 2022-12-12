@@ -57,7 +57,8 @@ def export_model(ca, base_fn, channel_n):
 
   cf = ca.call.get_concrete_function(
       x=tf.TensorSpec([None, None, None, channel_n]),
-      fire_rate=tf.constant(0.5),
+      fire_rate=None,
+      # fire_rate=tf.constant(0.5),
       angle=tf.constant(0.0),
       step_size=None) # Use step_size passed into model initialization
       # step_size=tf.constant(1.0))

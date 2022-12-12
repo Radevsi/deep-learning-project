@@ -4,7 +4,7 @@ print('\n...........................IN main.py...........................')
 
 # https://stackoverflow.com/questions/35869137/avoid-tensorflow-print-on-standard-error
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 import logging
@@ -58,7 +58,7 @@ def main():
     MAKE_POOL = False
 
     # Run experiments parameter
-    EXPERIMENT_NUMBER = 4
+    EXPERIMENT_NUMBER = 3
     RUN_EXPERIMENTS = True
 
     if RUN_EXPERIMENTS:
@@ -82,13 +82,13 @@ def main():
     #         target_sizes = [150, 150, 150, 150]
     #         model_params = [(24, 128), (12, 100), (32, 100), (24, [256, 300])]
 
-            # image_names = ['sleigh']
-            # target_sizes = [48]
-            # model_params = [(20, 128)]
+            image_names = ['starry-night']
+            target_sizes = [150]
+            model_params = [(12, 100)]
 
-            image_names = ['mozart', 'mozart1', 'mozart', 'mozart1', 'mozart', 'mozart1', 'mozart', 'mozart1']
-            target_sizes = [48, 48, 48, 48, 48, 48, 48, 48]
-            model_params = [(20, 128), (20, 128), (20, 160), (20, 160), (24, 184), (24, 184), (24, 256), (24, 256)]
+            # image_names = ['mozart', 'mozart1', 'mozart', 'mozart1', 'mozart', 'mozart1', 'mozart', 'mozart1']
+            # target_sizes = [48, 48, 48, 48, 48, 48, 48, 48]
+            # model_params = [(20, 128), (20, 128), (20, 160), (20, 160), (24, 184), (24, 184), (24, 256), (24, 256)]
 
             # image_names = ['starry-night', 'starry-night', 'starry-night', 'bob-ross-painting', 'starry-night', 'sleigh']
             # target_sizes = [150, 150, 150, 135, 150, 48]
@@ -110,9 +110,9 @@ def main():
         ## Experiment 4 (toggling the step size)
         if EXPERIMENT_NUMBER == 4:
 
-            image_name = 'sleigh'
-            target_size = 48
-            channel_n, hidden_size = 20, 160
+            image_name = 'bob-ross-painting'
+            target_size = 135
+            channel_n, hidden_size = 12, 100
             step_sizes = [0.3, 1.0, 2.0, 3.0]
             
             experiments.experiment4(image_name=image_name, target_size=target_size, channel_n=channel_n, 
