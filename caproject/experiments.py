@@ -287,9 +287,9 @@ class Experiments:
         tf.keras.backend.clear_session()
       del ca
 
-      plt.plot(loss_log, '.', alpha=0.2, label=f'fire_rate of {cell_fire_rate}')
+      plt.plot(np.log10(loss_log), '.', alpha=0.2, label=f'fire_rate of {cell_fire_rate}')
       # Append to big dictionary
-      loss_log_dict[cell_fire_rate] = loss_log
+      loss_log_dict[cell_fire_rate] = np.log10(loss_log)
 
     plt.legend()
     plt.title(f'Log10 Loss for {image_name}.png, {channel_n} Channels, and {hidden_size} Hidden Size')
@@ -354,7 +354,7 @@ class Experiments:
         tf.keras.backend.clear_session()
       del ca
 
-      plt.plot(loss_log, '.', alpha=0.3, label=f'step_size of {step_size}')
+      plt.plot(np.log10(loss_log), '.', alpha=0.3, label=f'step_size of {step_size}')
 
     plt.xlabel('Time')
     plt.ylabel('Loss history (log10)') 

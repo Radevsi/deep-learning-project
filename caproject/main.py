@@ -101,8 +101,8 @@ def main():
 
             image_name = 'bob-ross-painting'
             target_size = 135
-            channel_n, hidden_size = 20, 256
-            cell_fire_rates = [0.3, 0.4, 0.5, 0.7]
+            channel_n, hidden_size = 24, 256
+            cell_fire_rates = [0.3, 0.7, 0.5, 0.4]
             
             experiments.experiment3(image_name=image_name, target_size=target_size, channel_n=channel_n, 
                                     hidden_size=hidden_size, cell_fire_rates=cell_fire_rates)
