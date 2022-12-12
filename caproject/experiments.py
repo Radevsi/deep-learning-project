@@ -287,7 +287,7 @@ class Experiments:
         tf.keras.backend.clear_session()
       del ca
 
-      plt.plot(loss_log, '.', label=f'fire_rate of {cell_fire_rate}')
+      plt.plot(loss_log, '.', alpha=0.2, label=f'fire_rate of {cell_fire_rate}')
       # Append to big dictionary
       loss_log_dict[cell_fire_rate] = loss_log
 
